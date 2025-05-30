@@ -2,10 +2,15 @@
 A single-page HTML &amp; Javascript web app to plan a PhD or Research Project
 
 ## Download App (Version 1.1.2)
-You can download the app as an HTML file here: https://github.com/ahelme/research-planner/blob/main/research_planner_1.1.2.html
+You can download the app as an HTML file here (right-click Download Linked File / Save As): 
+https://github.com/ahelme/research-planner/blob/main/research_planner_1.1.2.html
 
 ## Instructions
-Download the HTML file and open it in your web-browser of choice.
+Download the HTML file to your desktop, then open it in your web-browser of choice.
+
+## Github Pages
+Alternatively, you can access the app here on Github Pages (however, if others are using the app you may lose your data):
+
 
 ## Purpose: This is a Research Planner that allows users to manage research activities and elements with dates, progress tracking, and supervisor communication.
 * 	The application is completely self-contained in this single HTML file - just save it and open in any modern web browser.
