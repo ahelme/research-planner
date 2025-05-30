@@ -1,0 +1,2460 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Planner</title>
+    <style>
+        /* Default cursor for all elements */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: default;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 12px;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+ 
+        .container {
+            max-width: 100%;
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #444;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: normal;
+        }
+        
+        .app-download {
+            overflow-x: auto;
+            max-width: 100%;
+            display: flex;
+  			justify-content: center;
+  			align-items: center;
+            margin-bottom: 10px;
+        }                  
+        
+        .app-download-text {
+  			display: flex;
+  			justify-content: center;
+  			align-items: center;
+			color: #999;
+            font-size: 12px;
+            font-style: italic;
+            font-weight: normal; 
+            }
+
+		.research-title {
+  			display: flex;
+  			justify-content: center;
+  			align-items: center;
+  			font-style: italic;
+            font-weight: normal; 
+  			font-size: 18px;
+  			margin-bottom: 10px;
+			
+			}
+
+		.wrap { 
+			padding: 8px; 
+			justify-content: center;
+			align-items: center;
+			border-radius: 4px;
+            cursor: text !important;
+			} 
+		
+		.wrap:hover { 
+			padding: 7px; 
+			justify-content: center;
+			border: 1px dashed #686868;
+			background-color: #F7FED5;
+			} 
+		
+		.wrap:focus {	
+			background-color: #F7FED5;
+			border: 1px dashed #686868;
+			}
+
+        .toolbar {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .mode-buttons {
+            display: flex;
+            gap: 5px;
+            margin-right: 20px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer !important;
+            font-size: 12px;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+            
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-outline {
+            background: white;
+            color: #6c757d;
+            border: 1px solid #6c757d;
+        }
+        
+        .btn-outline:hover {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-outline.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .research-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin: 0;
+        }
+        
+        .research-table th {
+            background: #BFBFBF;
+            padding: 8px 6px;
+            text-align: left;
+            border: 1px solid #999;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .research-table th:nth-child(2n) {
+            background: #E6E6E6;
+        }
+        
+        .research-table td {
+            padding: 6px;
+            border: 1px solid #ccc;
+            vertical-align: top;
+            position: relative;
+        }
+        
+        /* Activity rows - alternating colors */
+        .activity-row {
+            cursor: default;
+        }
+        
+        .activity-row.activity-even {
+            background-color: #f0f0f0;
+        }
+        
+        .activity-row.activity-odd {
+            background-color: #f5f5f5;
+        }
+        
+        .activity-row:hover {
+            background-color: rgba(0, 123, 255, 0.1) !important;
+        }
+        
+        /* Element rows - lighter grey than activities */
+        .element-row {
+            cursor: default;
+        }
+        
+        .element-row.activity-even {
+            background-color: #fafafa;
+        }
+        
+        .element-row.activity-odd {
+            background-color: #fcfcfc;
+        }
+        
+        .element-row:hover {
+            background-color: rgba(0, 123, 255, 0.1) !important;
+        }
+        
+        /* Supervisor column coloring */
+        .supervisor-sent.has-data {
+            background-color: #FFE990 !important;
+        }
+        
+        .feedback-requested.has-data {
+            background-color: #F9FFBC !important;
+        }
+        
+        .supervision-committee.has-data {
+            background-color: #A6FEFF !important;
+        }
+        
+        .supervisor-sent:not(.has-data) {
+            background-color: white !important;
+        }
+        
+        .feedback-requested:not(.has-data) {
+            background-color: white !important;
+        }
+        
+        .supervision-committee:not(.has-data) {
+            background-color: white !important;
+        }
+        
+        .research-table tr.dragging {
+            opacity: 0.5;
+            background-color: #e3f2fd !important;
+        }
+        
+        .research-table tr.drag-over {
+            border-top: 3px solid #007bff;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+        }
+        
+        .editable {
+            min-height: 20px;
+            cursor: text !important;
+            padding: 2px;
+            border-radius: 3px;
+        }
+        
+        .editable:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+            outline: 1px solid #007bff;
+            cursor: text !important;
+        }
+        
+        .editable:focus {
+            outline: 2px solid #007bff;
+            background-color: white;
+            cursor: text !important;
+        }
+        
+        .date-cell {
+            min-width: 120px;
+        }
+        
+        .days-cell {
+            text-align: center;
+            min-width: 40px;
+        }
+        
+        .weeks-cell {
+            text-align: center;
+            min-width: 50px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .progress-cell {
+            text-align: center;
+            min-width: 60px;
+        }
+        
+        .notes-cell {
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+        
+        .supervisor-sent-cell {
+            max-width: 200px;
+            word-wrap: break-word;
+        }
+        
+        .feedback-requested-cell {
+            max-width: 200px;
+            word-wrap: break-word;
+        }
+        
+        .supervision-committee-cell {
+            max-width: 200px;
+            word-wrap: break-word;
+        }
+        
+        .activity-cell {
+            min-width: 150px;
+            font-weight: 500;
+        }
+        
+        .chapter-cell {
+            min-width: 120px;
+        }
+        
+        .drag-handle {
+            cursor: grab !important;
+            padding: 4px;
+            color: #666;
+            font-size: 14px;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+        
+        .drag-handle:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            border-radius: 3px;
+            transform: scale(1.1);
+        }
+        
+        .drag-handle:active {
+            cursor: grabbing !important;
+            transform: scale(0.95);
+        }
+        
+        .activity-drag-handle {
+            background: #007bff;
+            color: white;
+            border-radius: 3px;
+            font-weight: bold;
+            cursor: grab !important;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+        
+        .activity-drag-handle:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+        }
+        
+        .activity-drag-handle:active {
+            cursor: grabbing !important;
+            transform: scale(0.95);
+        }
+        
+        .element-drag-handle {
+            background: #6c757d;
+            color: white;
+            border-radius: 3px;
+            margin-left: 10px;
+            cursor: grab !important;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+        
+        .element-drag-handle:hover {
+            background: #545b62;
+            transform: scale(1.05);
+            box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+        }
+        
+        .element-drag-handle:active {
+            cursor: grabbing !important;
+            transform: scale(0.95);
+        }
+        
+        .activity-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 13px;
+        }
+        
+        .element-prefix {
+            color: #bbb;
+            margin-right: 5px;
+            font-weight: normal;
+        }
+        
+        .add-element-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer !important;
+            font-size: 10px;
+            margin-left: 5px;
+        }
+        
+        .add-element-btn:hover {
+            background: #218838;
+        }
+        
+        .add-activity-btn {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #007bff;
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
+        }
+        
+        .add-activity-btn:hover {
+            background: #0056b3;
+            transform: scale(1.1);
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer !important;
+            font-size: 10px;
+            margin-left: 5px;
+            z-index: 100;
+            position: relative;
+            pointer-events: auto;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+        
+        .delete-btn:active {
+            background: #a71e2a;
+            transform: scale(0.95);
+        }
+        
+        /* View mode styles */
+        .view-mode .drag-handle,
+        .view-mode .activity-drag-handle,
+        .view-mode .element-drag-handle {
+            display: none;
+        }
+        
+        .view-mode .add-element-btn,
+        .view-mode .delete-btn,
+        .view-mode .add-activity-btn {
+            display: none;
+        }
+        
+        .view-mode .editable {
+            cursor: default !important;
+        }
+        
+        .view-mode .editable:hover {
+            background-color: transparent;
+            outline: none;
+            cursor: default !important;
+        }
+        
+        .view-mode .research-table th:first-child,
+        .view-mode .research-table td:first-child {
+            display: none;
+        }
+        
+        /* Hide Days and Weeks columns in view mode */
+        .view-mode .research-table th:nth-child(4),
+        .view-mode .research-table td:nth-child(4),
+        .view-mode .research-table th:nth-child(5),
+        .view-mode .research-table td:nth-child(5) {
+            display: none;
+        }
+        
+        /* Hide element numbers and counts in view mode */
+        .view-mode .element-prefix {
+            display: none;
+        }
+        
+        .view-mode .element-count {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .research-table {
+                font-size: 10px;
+            }
+            
+            .research-table th,
+            .research-table td {
+                padding: 4px;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/ajv/dist/ajv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+</head>
+<body>
+    
+    <div class="app-download">
+    	<p>
+    		<button id="downloadBtn" class="btn btn-success" >Download the App</button>
+    	</p>
+    </div>
+    
+    <div class="app-download">    
+    	<p>
+    		<span class="app-download-text">use research planner app on your own computer - download the app then open .html file in a web browser</span>
+		</p>
+    </div>
+
+    	<script>
+        	document.getElementById('downloadBtn').addEventListener('click', function() {
+            const element = document.createElement('a');
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            element.href = url;
+            element.download = 'research_planner_1.0.html';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            URL.revokeObjectURL(url); // Clean up
+    	    });
+    	</script>
+    </div>
+        
+    <div class="container">
+        <h1>Research Planner </h1>
+        <h2>Version 1.1.2</h2>
+            
+        <div class="research-title">
+        <span class="input wrap" role="textbox" contenteditable>Research Title</span>
+        </div>
+            
+        <div class="toolbar">
+            <div class="mode-buttons">
+                <button class="btn btn-outline active" style="margin-right: 5px;" id="editModeBtn" onclick="setMode('edit')">✏️ Edit Mode</button>
+                <button class="btn btn-outline" id="viewModeBtn" onclick="setMode('view')">👁️ View Mode</button>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 10px; margin-right: 0px;">
+                <label for="researchStartDate" style="font-weight: bold; color: #333;">📅 Research Start Date:</label>
+                <input type="date" id="researchStartDate" value="2025-03-01" style="margin-right: 20px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;">
+            </div>
+            
+            <button style="margin-left: 5px;" class="btn btn-success" data-action="save-data">💾 Save Data</button>
+            <button class="btn btn-primary" data-action="load-data">📁 Load Data</button>
+            <button class="btn btn-secondary" data-action="delete-all" >🗑️ Delete All</button>
+            
+            <span style="margin-left: 10px; color: #666; font-size: 11px;" id="modeHelp">
+                <strong>Edit Mode:</strong>
+                Drag Activities/Elements to reorder • Click cells to edit • Use + buttons to add elements
+            </span>
+        </div>
+        
+        <table class="research-table" id="researchTable">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">Drag</th>
+                    <th>Activity / Element</th>
+                    <th>Research / Chapter</th>
+                    <th>Days</th>
+                    <th>Weeks</th>
+                    <th>Notes</th>
+                    <th>Progress</th>
+                    <th>Start Date</th>
+                    <th>Expected Date for Completion</th>
+                    <th style="background: #A6FEFF;">Supervision/Committee</th>
+                    <th style="background: #FFE990;">Chapter Sent to Supervisors</th>
+                    <th style="background: #F9FFBC;">Chapter Feedback Requested</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Data will be populated by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+    
+    <button class="add-activity-btn" title="Add New Activity">+</button>
+
+    <script>
+        // ================================
+        // GLOBAL VARIABLES & DATA
+        // ================================
+        
+        let currentMode = 'edit';
+        let draggedElement = null;
+        let researchStartDate = '2025-03-01'; // Default research start date
+        
+        let researchData = [
+            {
+                "activityName": "First Supervision Meeting",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 20,
+                        "notes": "Prepare for first supervision",
+                        "progress": "",
+                        "startDate": "2025-03-01",
+                        "expectedDate": "2025-03-21",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "",
+                        "days": 7,
+                        "notes": "Prepare and send updates to supervisors",
+                        "progress": "",
+                        "startDate": "2025-03-22",
+                        "expectedDate": "2025-03-29",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Research plan sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Primary Supervisor's Office",
+                        "progress": "",
+                        "startDate": "2025-03-30",
+                        "expectedDate": "2025-03-31",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    }
+                ]
+            },
+            {
+                "activityName": "Reading & Writing",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 20,
+                        "notes": "",
+                        "progress": "",
+                        "startDate": "2025-04-01",
+                        "expectedDate": "2025-04-21",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Supervisory Agreement",
+                "elements": [
+                    {
+                        "chapter": "Supervisory Agreement",
+                        "days": 7,
+                        "notes": "Write first draft",
+                        "progress": "0%",
+                        "startDate": "2025-04-22",
+                        "expectedDate": "2025-04-29",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Draft Agreement sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom & Sign/Finalise Agreement",
+                        "progress": "",
+                        "startDate": "2025-04-30",
+                        "expectedDate": "2025-05-01",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Sign agreement by: 00 Mon 20XX"
+                    }
+                ]
+            },
+            {
+                "activityName": "Research Methodology Course",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "Course",
+                        "progress": "",
+                        "startDate": "2025-05-02",
+                        "expectedDate": "2025-05-30",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2025-05-31",
+                        "expectedDate": "2025-06-01",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "Course",
+                        "progress": "",
+                        "startDate": "2025-06-02",
+                        "expectedDate": "2025-06-30",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Topic",
+                "elements": [
+                    {
+                        "chapter": "Topic",
+                        "days": 13,
+                        "notes": "Write first draft",
+                        "progress": "0%",
+                        "startDate": "2025-07-01",
+                        "expectedDate": "2025-07-14",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Topic sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2025-07-15",
+                        "expectedDate": "2025-07-16",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    }
+                ]
+            },
+            {
+                "activityName": "Winter Break",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 14,
+                        "notes": "",
+                        "progress": "0%",
+                        "startDate": "2025-07-17",
+                        "expectedDate": "2025-07-31",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Reading & Writing",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "",
+                        "progress": "",
+                        "startDate": "2025-08-01",
+                        "expectedDate": "2025-08-29",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Research Question",
+                "elements": [
+                    {
+                        "chapter": "Research Question",
+                        "days": 14,
+                        "notes": "Write first draft",
+                        "progress": "0%",
+                        "startDate": "2025-08-30",
+                        "expectedDate": "2025-09-13",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Research Question sent: 00 Mon 20XX",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting:",
+                        "progress": "",
+                        "startDate": "2025-09-14",
+                        "expectedDate": "2025-09-15",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Reading & Writing",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "",
+                        "progress": "",
+                        "startDate": "2025-09-16",
+                        "expectedDate": "2025-10-13",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Annotated Bibliography",
+                "elements": [
+                    {
+                        "chapter": "Annotated Bibliography",
+                        "days": 21,
+                        "notes": "Write first draft",
+                        "progress": "0%",
+                        "startDate": "2025-10-14",
+                        "expectedDate": "2025-11-04",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Annotated Bibliography sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2025-11-05",
+                        "expectedDate": "2025-11-06",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    }
+                ]
+            },
+            {
+                "activityName": "Methodology Outline",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "Write first draft",
+                        "progress": "",
+                        "startDate": "2025-11-07",
+                        "expectedDate": "2025-12-05",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Methodology Outline sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "0%",
+                        "startDate": "2025-12-06",
+                        "expectedDate": "2025-12-07",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    }
+                ]
+            },
+            {
+                "activityName": "Reading & Writing",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 22,
+                        "notes": "",
+                        "progress": "",
+                        "startDate": "2025-12-08",
+                        "expectedDate": "2025-12-30",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Literature Review Chapter",
+                "elements": [
+                    {
+                        "chapter": "Literature Review",
+                        "days": 29,
+                        "notes": "Write first draft",
+                        "progress": "",
+                        "startDate": "2025-12-31",
+                        "expectedDate": "2026-01-29",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Lit Review Chapter sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 7,
+                        "notes": "Re-draft and send to supervisors",
+                        "progress": "0%",
+                        "startDate": "2026-01-30",
+                        "expectedDate": "2026-02-06",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "Literature Review",
+                        "days": 5,
+                        "notes": "Edit (incorporate feedback) and send to proofer",
+                        "progress": "",
+                        "startDate": "2026-02-07",
+                        "expectedDate": "2026-02-12",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Summer Break",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 14,
+                        "notes": "",
+                        "progress": "0%",
+                        "startDate": "2026-02-13",
+                        "expectedDate": "2026-02-27",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "-- CONFIRMATION --",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 20,
+                        "notes": "",
+                        "progress": "",
+                        "startDate": "2026-02-28",
+                        "expectedDate": "2026-03-20",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Draft confirmation report sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2026-03-21",
+                        "expectedDate": "2026-03-22",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "",
+                        "days": 13,
+                        "notes": "",
+                        "progress": "",
+                        "startDate": "2026-03-23",
+                        "expectedDate": "2026-04-05",
+                        "supervisionCommittee": "CONFIRMATION: 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Draft Ethics Application",
+                "elements": [
+                    {
+                        "chapter": "Ethics application",
+                        "days": 14,
+                        "notes": "Write first draft",
+                        "progress": "0%",
+                        "startDate": "2026-04-06",
+                        "expectedDate": "2026-04-20",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Draft Ethics application sent: 00 Mon 20XX",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2026-04-21",
+                        "expectedDate": "2026-04-22",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Final Ethics Application",
+                "elements": [
+                    {
+                        "chapter": "Ethics Application - final draft",
+                        "days": 14,
+                        "notes": "Write final draft",
+                        "progress": "0%",
+                        "startDate": "2026-04-23",
+                        "expectedDate": "2026-05-07",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Final Application sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2026-05-08",
+                        "expectedDate": "2026-05-09",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    }
+                ]
+            },
+            {
+                "activityName": "Creative Output 1 - Part 1",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 36,
+                        "notes": "",
+                        "progress": "0%",
+                        "startDate": "2026-05-10",
+                        "expectedDate": "2026-06-15",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Creative notes sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2026-06-16",
+                        "expectedDate": "2026-06-17",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    }
+                ]
+            },
+            {
+                "activityName": "Winter Break",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 14,
+                        "notes": "",
+                        "progress": "",
+                        "startDate": "2026-06-18",
+                        "expectedDate": "2026-07-02",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Creative Output 1 - Part 2",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "",
+                        "progress": "0%",
+                        "startDate": "2026-07-03",
+                        "expectedDate": "2026-07-31",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Creative notes sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2026-08-01",
+                        "expectedDate": "2026-08-02",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "",
+                        "days": 40,
+                        "notes": "",
+                        "progress": "0%",
+                        "startDate": "2026-08-03",
+                        "expectedDate": "2026-09-12",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Creative notes sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2026-09-13",
+                        "expectedDate": "2026-09-14",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "",
+                        "progress": "0%",
+                        "startDate": "2026-09-15",
+                        "expectedDate": "2026-10-12",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Creative output sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2026-10-13",
+                        "expectedDate": "2026-10-14",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "",
+                        "days": 7,
+                        "notes": "",
+                        "progress": "0%",
+                        "startDate": "2026-10-15",
+                        "expectedDate": "2026-10-22",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Reading & Writing",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 21,
+                        "notes": "",
+                        "progress": "",
+                        "startDate": "2026-10-23",
+                        "expectedDate": "2026-11-13",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Interviews with Practitioners",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 36,
+                        "notes": "Conduct interviews",
+                        "progress": "0%",
+                        "startDate": "2026-11-14",
+                        "expectedDate": "2026-12-20",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Update on interviews sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2026-12-21",
+                        "expectedDate": "2026-12-22",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "Conduct interviews",
+                        "progress": "0%",
+                        "startDate": "2026-12-23",
+                        "expectedDate": "2027-01-20",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Summer Break",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 14,
+                        "notes": "",
+                        "progress": "",
+                        "startDate": "2027-01-21",
+                        "expectedDate": "2027-02-04",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Data Analysis",
+                "elements": [
+                    {
+                        "chapter": "Interview Themes",
+                        "days": 28,
+                        "notes": "Themes and memos",
+                        "progress": "0%",
+                        "startDate": "2027-02-05",
+                        "expectedDate": "2027-03-05",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Notes on data sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2027-03-06",
+                        "expectedDate": "2027-03-07",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "Themes and memos",
+                        "progress": "0%",
+                        "startDate": "2027-03-08",
+                        "expectedDate": "2027-04-05",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "-- PROGRESS REVIEW YEAR 2 --",
+                "elements": [
+                    {
+                        "chapter": "Progress Review Form",
+                        "days": 9,
+                        "notes": "Draft Progress Review Form",
+                        "progress": "0%",
+                        "startDate": "2027-04-06",
+                        "expectedDate": "2027-04-15",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Draft Review Form sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2027-04-16",
+                        "expectedDate": "2027-04-17",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "",
+                        "days": 7,
+                        "notes": "",
+                        "progress": "",
+                        "startDate": "2027-04-18",
+                        "expectedDate": "2027-04-25",
+                        "supervisionCommittee": "PROGRESS REVIEW: 00 Mon 20XX",
+                        "supervisorSent": "Final Review Form sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Methodology Chapter",
+                "elements": [
+                    {
+                        "chapter": "Methodology",
+                        "days": 28,
+                        "notes": "Write first draft",
+                        "progress": "",
+                        "startDate": "2027-04-26",
+                        "expectedDate": "2027-05-24",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 14,
+                        "notes": "Re-draft and send to supervisors for feedback",
+                        "progress": "0%",
+                        "startDate": "2027-05-25",
+                        "expectedDate": "2027-06-08",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Methodology Chapter sent: 00 Mon 20XX",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "Methodology",
+                        "days": 14,
+                        "notes": "Edit (incorporate feedback) and send to proofer",
+                        "progress": "",
+                        "startDate": "2027-06-09",
+                        "expectedDate": "2027-06-23",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Creative Output Planning",
+                "elements": [
+                    {
+                        "chapter": "Creative Plan",
+                        "days": 21,
+                        "notes": "",
+                        "progress": "0%",
+                        "startDate": "2027-06-24",
+                        "expectedDate": "2027-07-15",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Creative Plan revision sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2027-07-16",
+                        "expectedDate": "2027-07-17",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    }
+                ]
+            },
+            {
+                "activityName": "Ethics Revision",
+                "elements": [
+                    {
+                        "chapter": "Ethics Revision",
+                        "days": 13,
+                        "notes": "Write first draft revision",
+                        "progress": "0%",
+                        "startDate": "2027-07-18",
+                        "expectedDate": "2027-07-31",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Ethics Revision sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2027-08-01",
+                        "expectedDate": "2027-08-02",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "",
+                        "days": 7,
+                        "notes": "Submit Ethics Revision",
+                        "progress": "0%",
+                        "startDate": "2027-08-03",
+                        "expectedDate": "2027-08-10",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Creative Output 2",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "Creative research",
+                        "progress": "0%",
+                        "startDate": "2027-08-11",
+                        "expectedDate": "2027-09-08",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Creative output sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2027-09-09",
+                        "expectedDate": "2027-09-10",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "",
+                        "progress": "0%",
+                        "startDate": "2027-09-11",
+                        "expectedDate": "2027-10-08",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Creative output sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "",
+                        "progress": "",
+                        "startDate": "2027-10-09",
+                        "expectedDate": "2027-10-10",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "",
+                        "progress": "0%",
+                        "startDate": "2027-10-11",
+                        "expectedDate": "2027-11-08",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Summer Break",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 14,
+                        "notes": "",
+                        "progress": "",
+                        "startDate": "2027-11-09",
+                        "expectedDate": "2027-11-23",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "-- COMPLETION SEMINAR --",
+                "elements": [
+                    {
+                        "chapter": "Preparation",
+                        "days": 28,
+                        "notes": "Write first draft presentation",
+                        "progress": "0%",
+                        "startDate": "2027-11-24",
+                        "expectedDate": "2027-12-22",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Presentation sent: 00 Mon 20XX",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2027-12-23",
+                        "expectedDate": "2027-12-24",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Completion Presentation",
+                        "days": 7,
+                        "notes": "Present research",
+                        "progress": "0%",
+                        "startDate": "2027-12-25",
+                        "expectedDate": "2028-01-01",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "Editing and Proofing",
+                "elements": [
+                    {
+                        "chapter": "",
+                        "days": 28,
+                        "notes": "Editing",
+                        "progress": "0%",
+                        "startDate": "2028-01-02",
+                        "expectedDate": "2028-01-30",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "Edited proofed thesis sent: 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2028-01-31",
+                        "expectedDate": "2028-02-01",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+                    },
+                    {
+                        "chapter": "",
+                        "days": 25,
+                        "notes": "Proofing",
+                        "progress": "0%",
+                        "startDate": "2028-02-02",
+                        "expectedDate": "2028-02-27",
+                        "supervisionCommittee": "",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    }
+                ]
+            },
+            {
+                "activityName": "-- THESIS SUBMISSION --",
+                "elements": [
+                    {
+                        "chapter": "Supervision",
+                        "days": 1,
+                        "notes": "Supervision meeting: Zoom",
+                        "progress": "",
+                        "startDate": "2028-02-28",
+                        "expectedDate": "2028-02-29",
+                        "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+                        "supervisorSent": "",
+                        "feedbackRequested": ""
+                    },
+                    {
+                        "chapter": "",
+                        "days": 1,
+                        "notes": "Submit thesis",
+                        "progress": "0%",
+                        "startDate": "2028-03-01",
+                        "expectedDate": "2028-03-02",
+                        "supervisionCommittee": "THESIS SUBMISSION: 00 Mon 20XX",
+                        "supervisorSent": "Thesis submitted: DAY 00 Mon 20XX",
+                        "feedbackRequested": ""
+                    }
+                ]
+            }
+        ];
+// ================================
+// UTILITY FUNCTIONS
+// ================================
+
+function calculateWeeks(days) {
+    if (!days || isNaN(days)) return "0.0";
+    return Math.max(0, days / 7).toFixed(1);
+}
+
+function addDays(date, days) {
+    if (!date || date === "-" || !days) return date;
+    const result = new Date(date);
+    result.setDate(result.getDate() + parseInt(days));
+    return result.toISOString().split('T')[0];
+}
+
+function formatDate(dateStr) {
+    if (!dateStr || dateStr === "-") return dateStr;
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
+
+// ================================
+// DATA MANIPULATION FUNCTIONS
+// ================================
+
+function recalculateDates() {
+    let lastEndDate = null;
+
+    researchData.forEach((activity, activityIndex) => {
+        activity.elements.forEach((element, elementIndex) => {
+            // Calculate start date
+            if (activityIndex === 0 && elementIndex === 0) {
+                // First element of first activity starts at the Research Start Date
+                element.startDate = researchStartDate;
+            } else if (elementIndex === 0 && lastEndDate) {
+                // First element of activity starts after previous activity's last element
+                const nextDay = new Date(lastEndDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+                element.startDate = nextDay.toISOString().split('T')[0];
+            } else if (elementIndex > 0) {
+                // Subsequent elements start after previous element in same activity
+                const prevElement = activity.elements[elementIndex - 1];
+                if (prevElement.expectedDate && prevElement.expectedDate !== "-") {
+                    // Set the start date without adding an extra day
+                    element.startDate = prevElement.expectedDate;
+                }
+            }
+
+            // Calculate expected completion date
+            if (element.startDate && element.startDate !== "-" && element.days) {
+                // Calculate expected date based on the number of days specified
+                element.expectedDate = addDays(element.startDate, element.days); // This adds the specified days correctly
+            }
+
+            // Update lastEndDate if this element has an end date
+            if (element.expectedDate && element.expectedDate !== "-") {
+                lastEndDate = element.expectedDate;
+            }
+        });
+    });
+}        
+        function addNewActivity() {
+            const newActivity = {
+                activityName: "New Activity",
+                elements: [
+                    {
+                        chapter: "",
+                        days: 7,
+                        notes: "",
+                        progress: "0%",
+                        startDate: "",
+                        expectedDate: "",
+                        supervisionCommittee: "",
+                        supervisorSent: "",
+                        feedbackRequested: ""
+                    }
+                ]
+            };
+            
+            researchData.push(newActivity);
+            recalculateDates();
+            renderTable();
+        }
+        
+        function addElementToActivity(activityIndex) {
+            const newElement = {
+                chapter: "",
+                days: 7,
+                notes: "",
+                progress: "0%",
+                startDate: "",
+                expectedDate: "",
+                supervisionCommittee: "",
+                supervisorSent: "",
+                feedbackRequested: ""
+            };
+            
+            researchData[activityIndex].elements.push(newElement);
+            recalculateDates();
+            renderTable();
+        }
+        
+        function deleteActivity(activityIndex) {
+            console.log('deleteActivity called with index:', activityIndex);
+            console.log('researchData length:', researchData.length);
+            
+            if (activityIndex < 0 || activityIndex >= researchData.length) {
+                console.log('Invalid activity index!');
+                alert('❌ Error: Invalid activity index');
+                return;
+            }
+            
+            const activity = researchData[activityIndex];
+            console.log('Activity to delete:', activity.activityName);
+            
+            // Show confirmation dialog
+            const confirmed = confirm('Do you really want to delete this Activity?');
+            if (!confirmed) {
+                console.log('User cancelled activity deletion');
+                return;
+            }
+            
+            console.log('Deleting activity...');
+            researchData.splice(activityIndex, 1);
+            console.log('Activity deleted. New length:', researchData.length);
+            
+            recalculateDates();
+            renderTable();
+            console.log('Table re-rendered');
+        }
+        
+        function deleteElement(activityIndex, elementIndex) {
+            console.log('deleteElement called with:', activityIndex, elementIndex);
+            console.log('researchData length:', researchData.length);
+            
+            if (activityIndex < 0 || activityIndex >= researchData.length) {
+                console.log('Invalid activity index!');
+                alert('❌ Error: Invalid activity index');
+                return;
+            }
+            
+            const activity = researchData[activityIndex];
+            console.log('Activity:', activity.activityName, 'Elements count:', activity.elements.length);
+            
+            if (elementIndex < 0 || elementIndex >= activity.elements.length) {
+                console.log('Invalid element index!');
+                alert('❌ Error: Invalid element index');
+                return;
+            }
+            
+            // Show confirmation dialog
+            const confirmed = confirm('Do you really want to delete this Element?');
+            if (!confirmed) {
+                console.log('User cancelled element deletion');
+                return;
+            }
+            
+            if (activity.elements.length === 1) {
+                // Delete entire activity
+                console.log('Deleting entire activity (last element)...');
+                researchData.splice(activityIndex, 1);
+                console.log('Activity deleted. New length:', researchData.length);
+            } else {
+                // Delete just this element
+                console.log('Deleting element...');
+                activity.elements.splice(elementIndex, 1);
+                console.log('Element deleted. New element count:', activity.elements.length);
+            }
+            
+            recalculateDates();
+            renderTable();
+            console.log('Table re-rendered');
+        }
+        
+        function deleteAll() {
+            console.log('deleteAll called');
+            
+            // Show warning dialog with the specific text requested
+            const warningMessage = "Warning: you will lose all your data unless you have saved it! Click Cancel and then click Save Data to save your Research Plan or it will be lost forever. Do you really want to Delete All?";
+            
+            const userConfirmed = confirm(warningMessage);
+            
+            if (userConfirmed) {
+                console.log('User confirmed delete all');
+                
+                // Clear all data
+                researchData = [];
+                
+                // Re-render the empty table
+                renderTable();
+                
+                console.log('All data deleted and table re-rendered');
+                alert('✅ All data has been deleted successfully.');
+            } else {
+                console.log('User cancelled delete all');
+            }
+        }
+        
+        // ================================
+        // UI FUNCTIONS
+        // ================================
+        
+        function setMode(mode) {
+            currentMode = mode;
+            const container = document.querySelector('.container');
+            const editBtn = document.getElementById('editModeBtn');
+            const viewBtn = document.getElementById('viewModeBtn');
+            const helpText = document.getElementById('modeHelp');
+            
+            if (mode === 'edit') {
+                container.classList.remove('view-mode');
+                editBtn.classList.add('active');
+                viewBtn.classList.remove('active');
+                helpText.innerHTML = '<strong>Edit Mode:</strong> Drag Activities/Elements to reorder • Click cells to edit • Use + buttons to add elements';
+                
+                // Re-enable editing
+                document.querySelectorAll('.editable').forEach(el => {
+                    el.contentEditable = true;
+                });
+            } else {
+                container.classList.add('view-mode');
+                viewBtn.classList.add('active');
+                editBtn.classList.remove('active');
+                helpText.innerHTML = '<strong>View Mode:</strong> Read-only view for presentations and review';
+                
+                // Disable editing
+                document.querySelectorAll('.editable').forEach(el => {
+                    el.contentEditable = false;
+                });
+            }
+            
+            // Re-render to update draggable attributes
+            renderTable();
+        }
+        
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            researchData.forEach((activity, activityIndex) => {
+                const activityClass = activityIndex % 2 === 0 ? 'activity-even' : 'activity-odd';
+                
+                // Render activity header row
+                const activityRow = document.createElement('tr');
+                activityRow.className = `activity-row ${activityClass}`;
+                activityRow.draggable = currentMode === 'edit';
+                activityRow.dataset.activityIndex = activityIndex;
+                activityRow.dataset.rowType = 'activity';
+                
+                activityRow.innerHTML = `
+                    <td>
+                        <span class="drag-handle activity-drag-handle" title="Drag to reorder activities">⋮⋮</span>
+                    </td>
+                    <td class="activity-cell">
+                        <span class="activity-name editable" contenteditable="${currentMode === 'edit'}" data-field="activityName">${activity.activityName}</span>
+                        <button class="add-element-btn" data-action="add-element" data-activity-index="${activityIndex}">+ Element</button>
+                        <button class="delete-btn" data-action="delete-activity" data-activity-index="${activityIndex}">×</button>
+                    </td>
+                    <td colspan="10" style="color: #666; font-style: italic;" class="element-count">${activity.elements.length} element${activity.elements.length !== 1 ? 's' : ''}</td>
+                `;
+                
+                tbody.appendChild(activityRow);
+                
+                // Render elements
+                activity.elements.forEach((element, elementIndex) => {
+                    const elementRow = document.createElement('tr');
+                    elementRow.className = `element-row ${activityClass}`;
+                    elementRow.draggable = currentMode === 'edit';
+                    elementRow.dataset.activityIndex = activityIndex;
+                    elementRow.dataset.elementIndex = elementIndex;
+                    elementRow.dataset.rowType = 'element';
+                    
+                    const supervisionCommitteeClass = element.supervisionCommittee ? 'supervision-committee has-data' : 'supervision-committee';
+                    const supervisorSentClass = element.supervisorSent ? 'supervisor-sent has-data' : 'supervisor-sent';
+                    const feedbackRequestedClass = element.feedbackRequested ? 'feedback-requested has-data' : 'feedback-requested';
+                    
+                    elementRow.innerHTML = `
+                        <td>
+                            <span class="drag-handle element-drag-handle" title="Drag to reorder elements">⋮</span>
+                        </td>
+                        <td class="activity-cell">
+                            <span class="element-prefix">└─ Element ${elementIndex + 1}</span>
+                            <button class="delete-btn" data-action="delete-element" data-activity-index="${activityIndex}" data-element-index="${elementIndex}">×</button>
+                        </td>
+                        <td class="chapter-cell">
+                            <div class="editable" contenteditable="${currentMode === 'edit'}" data-field="chapter">${element.chapter}</div>
+                        </td>
+                        <td class="days-cell">
+                            <div class="editable" contenteditable="${currentMode === 'edit'}" data-field="days">${element.days || ''}</div>
+                        </td>
+                        <td class="weeks-cell">${calculateWeeks(element.days)}</td>
+                        <td class="notes-cell">
+                            <div class="editable" contenteditable="${currentMode === 'edit'}" data-field="notes">${element.notes}</div>
+                        </td>
+                        <td class="progress-cell">
+                            <div class="editable" contenteditable="${currentMode === 'edit'}" data-field="progress">${element.progress}</div>
+                        </td>
+                        <td class="date-cell">${element.startDate === "-" ? "-" : (element.startDate ? new Date(element.startDate).toLocaleDateString() : "")}</td>
+                        <td class="date-cell">${formatDate(element.expectedDate)}</td>
+                        <td class="date-cell supervision-committee-cell ${supervisionCommitteeClass}">
+                            <div class="editable" contenteditable="${currentMode === 'edit'}" data-field="supervisionCommittee">${element.supervisionCommittee}</div>
+                        </td>
+                        <td class="date-cell supervisor-sent-cell ${supervisorSentClass}">
+                            <div class="editable" contenteditable="${currentMode === 'edit'}" data-field="supervisorSent">${element.supervisorSent}</div>
+                        </td>
+                        <td class="date-cell feedback-requested-cell ${feedbackRequestedClass}">
+                            <div class="editable" contenteditable="${currentMode === 'edit'}" data-field="feedbackRequested">${element.feedbackRequested}</div>
+                        </td>
+                    `;
+                    
+                    tbody.appendChild(elementRow);
+                });
+            });
+        }
+        
+        // ================================
+        // EVENT HANDLERS
+        // ================================
+        
+        function setupEventDelegation() {
+            const container = document.querySelector('.container');
+            
+            // Research Start Date change handler
+            const researchStartDateInput = document.getElementById('researchStartDate');
+            if (researchStartDateInput) {
+                researchStartDateInput.addEventListener('change', function(e) {
+                    researchStartDate = e.target.value;
+                    recalculateDates();
+                    renderTable();
+                });
+            }
+            
+            // Button click handler for buttons inside container
+            container.addEventListener('click', function(e) {
+                console.log('Container click detected on:', e.target.tagName, e.target.className);
+                
+                // Handle delete buttons first
+                if (e.target.classList.contains('delete-btn')) {
+                    console.log('Delete button clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const action = e.target.dataset.action;
+                    console.log('Delete action:', action);
+                    
+                    if (action === 'delete-activity') {
+                        const activityIndex = parseInt(e.target.dataset.activityIndex);
+                        console.log('Deleting activity at index:', activityIndex);
+                        deleteActivity(activityIndex);
+                    } else if (action === 'delete-element') {
+                        const activityIndex = parseInt(e.target.dataset.activityIndex);
+                        const elementIndex = parseInt(e.target.dataset.elementIndex);
+                        console.log('Deleting element at:', activityIndex, elementIndex);
+                        deleteElement(activityIndex, elementIndex);
+                    }
+                    return;
+                }
+                
+                // Handle other buttons (non-delete)
+                const action = e.target.dataset.action;
+                console.log('Other button action:', action);
+                
+                if (action === 'save-data') {
+                    e.preventDefault();
+                    saveData();
+                } else if (action === 'load-data') {
+                    e.preventDefault();
+                    loadData();
+                } else if (action === 'delete-all') {
+                    e.preventDefault();
+                    deleteAll();
+                } else if (action === 'add-element') {
+                    e.preventDefault();
+                    const activityIndex = parseInt(e.target.dataset.activityIndex);
+                    addElementToActivity(activityIndex);
+                }
+            });
+            
+            // Floating add button handler
+            const addActivityBtn = document.querySelector('.add-activity-btn');
+            if (addActivityBtn) {
+                addActivityBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    addNewActivity();
+                });
+            }
+            
+            // Mode button handlers
+            document.getElementById('editModeBtn').addEventListener('click', () => setMode('edit'));
+            document.getElementById('viewModeBtn').addEventListener('click', () => setMode('view'));
+            
+            // Drag and drop handlers
+            const tbody = document.getElementById('tableBody');
+            tbody.addEventListener('dragstart', handleDragStart, false);
+            tbody.addEventListener('dragover', handleDragOver, false);
+            tbody.addEventListener('drop', handleDrop, false);
+            tbody.addEventListener('dragend', handleDragEnd, false);
+            tbody.addEventListener('dragenter', handleDragEnter, false);
+            
+            // Handle drag initiation from drag handles specifically
+            tbody.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains('drag-handle') || 
+                    e.target.classList.contains('activity-drag-handle') || 
+                    e.target.classList.contains('element-drag-handle')) {
+                    
+                    // Make sure the parent row is draggable
+                    const row = e.target.closest('tr');
+                    if (row && currentMode === 'edit') {
+                        row.draggable = true;
+                        console.log('Made row draggable:', row.dataset.rowType);
+                    }
+                    
+                    // Don't prevent default here - we want drag to work
+                }
+            });
+            
+            // Edit handlers
+            tbody.addEventListener('blur', function(e) {
+                if (e.target.classList.contains('editable')) {
+                    const field = e.target.dataset.field;
+                    if (field === 'activityName') {
+                        handleActivityNameEdit(e);
+                    } else {
+                        handleCellEdit(e);
+                    }
+                }
+            }, true);
+            
+            tbody.addEventListener('keydown', function(e) {
+                if (e.target.classList.contains('editable') && e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    e.target.blur();
+                }
+            });
+        }
+        
+        function handleActivityNameEdit(e) {
+            const activityIndex = parseInt(e.target.closest('tr').dataset.activityIndex);
+            const newName = e.target.textContent.trim();
+            
+            if (activityIndex >= 0) {
+                researchData[activityIndex].activityName = newName;
+            }
+        }
+        
+        function handleCellEdit(e) {
+            const field = e.target.dataset.field;
+            const elementRow = e.target.closest('tr');
+            const activityIndex = parseInt(elementRow.dataset.activityIndex);
+            const elementIndex = parseInt(elementRow.dataset.elementIndex);
+            const newValue = e.target.textContent.trim();
+            
+            if (field && activityIndex >= 0 && elementIndex >= 0) {
+                researchData[activityIndex].elements[elementIndex][field] = newValue;
+                
+                // If days changed, recalculate dates
+                if (field === 'days') {
+                    researchData[activityIndex].elements[elementIndex].days = parseInt(newValue) || 0;
+                    recalculateDates();
+                    renderTable();
+                } else if (field === 'supervisorSent' || field === 'feedbackRequested' || field === 'supervisionCommittee') {
+                    // Update supervisor column coloring
+                    renderTable();
+                }
+            }
+        }
+        
+        // ================================
+        // DRAG AND DROP FUNCTIONS
+        // ================================
+        
+        function handleDragStart(e) {
+            // Only allow drag in edit mode
+            if (currentMode !== 'edit') {
+                e.preventDefault();
+                return;
+            }
+            
+            // Find the row being dragged
+            const row = e.target.closest('tr');
+            if (!row) {
+                e.preventDefault();
+                return;
+            }
+            
+            // Check if drag started from a drag handle
+            const isDragHandle = e.target.classList.contains('drag-handle') || 
+                               e.target.classList.contains('activity-drag-handle') || 
+                               e.target.classList.contains('element-drag-handle');
+            
+            // Only allow drag from drag handles or if the entire row is being dragged
+            if (!isDragHandle && !row.draggable) {
+                e.preventDefault();
+                return;
+            }
+            
+            // Set up the drag
+            draggedElement = row;
+            draggedElement.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', ''); // Required for some browsers
+            
+            console.log('Drag started:', row.dataset.rowType, row.dataset.activityIndex);
+        }
+        
+        function handleDragEnter(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Drag enter');
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.dataTransfer.dropEffect = 'move';
+            
+            const targetRow = e.target.tagName === 'TR' ? e.target : e.target.closest('tr');
+            if (targetRow && targetRow !== draggedElement && draggedElement) {
+                // Remove drag-over class from all rows
+                document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+                
+                // Only highlight valid drop targets
+                const draggedType = draggedElement.dataset.rowType;
+                const targetType = targetRow.dataset.rowType;
+                
+                // Allow activity-to-activity or element-to-element drops
+                if ((draggedType === 'activity' && targetType === 'activity') ||
+                    (draggedType === 'element' && targetType === 'element')) {
+                    targetRow.classList.add('drag-over');
+                }
+            }
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Drop event fired!');
+            
+            const targetRow = e.target.tagName === 'TR' ? e.target : e.target.closest('tr');
+            
+            if (!targetRow) {
+                console.log('No target row found');
+                return;
+            }
+            
+            if (!draggedElement) {
+                console.log('No dragged element');
+                return;
+            }
+            
+            if (targetRow === draggedElement) {
+                console.log('Dropped on same row');
+                return;
+            }
+            
+            const draggedType = draggedElement.dataset.rowType;
+            const targetType = targetRow.dataset.rowType;
+            
+            console.log('Dropping:', draggedType, 'onto:', targetType);
+            
+            if (draggedType === 'activity' && targetType === 'activity') {
+                // Moving activity
+                const draggedIndex = parseInt(draggedElement.dataset.activityIndex);
+                const targetIndex = parseInt(targetRow.dataset.activityIndex);
+                
+                console.log('Moving activity from index', draggedIndex, 'to', targetIndex);
+                
+                if (draggedIndex !== targetIndex && !isNaN(draggedIndex) && !isNaN(targetIndex)) {
+                    const draggedActivity = researchData.splice(draggedIndex, 1)[0];
+                    researchData.splice(targetIndex, 0, draggedActivity);
+                    console.log('Activity moved successfully');
+                    
+                    recalculateDates();
+                    renderTable();
+                }
+            } else if (draggedType === 'element' && targetType === 'element') {
+                // Moving element within or between activities
+                const draggedActivityIndex = parseInt(draggedElement.dataset.activityIndex);
+                const draggedElementIndex = parseInt(draggedElement.dataset.elementIndex);
+                const targetActivityIndex = parseInt(targetRow.dataset.activityIndex);
+                const targetElementIndex = parseInt(targetRow.dataset.elementIndex);
+                
+                console.log('Moving element from', draggedActivityIndex, draggedElementIndex, 'to', targetActivityIndex, targetElementIndex);
+                
+                if (draggedActivityIndex === targetActivityIndex) {
+                    // Same activity - reorder elements
+                    if (draggedElementIndex !== targetElementIndex) {
+                        const draggedElementData = researchData[draggedActivityIndex].elements.splice(draggedElementIndex, 1)[0];
+                        researchData[draggedActivityIndex].elements.splice(targetElementIndex, 0, draggedElementData);
+                        console.log('Element reordered within activity');
+                        
+                        recalculateDates();
+                        renderTable();
+                    }
+                } else {
+                    // Different activity - move element
+                    const draggedElementData = researchData[draggedActivityIndex].elements.splice(draggedElementIndex, 1)[0];
+                    researchData[targetActivityIndex].elements.splice(targetElementIndex, 0, draggedElementData);
+                    console.log('Element moved between activities');
+                    
+                    recalculateDates();
+                    renderTable();
+                }
+            } else {
+                console.log('Invalid drop - type mismatch:', draggedType, 'to', targetType);
+            }
+        }
+        
+        function handleDragEnd(e) {
+            console.log('Drag ended');
+            
+            // Clean up
+            document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            draggedElement = null;
+        }
+        
+        // ================================
+        // SAVE AND LOAD FUNCTIONS
+        // ================================
+        
+        function saveData() {
+            try {
+                const saveObject = {
+                    version: "1.0",
+                    appName: "Research Planner",
+                    exportDate: new Date().toISOString(),
+                    researchStartDate: researchStartDate,
+                    totalActivities: researchData.length,
+                    totalElements: researchData.reduce((sum, activity) => sum + activity.elements.length, 0),
+                    data: researchData
+                };
+                
+                // Use more robust JSON stringification
+                const dataStr = JSON.stringify(saveObject, function(key, value) {
+                    if (typeof value === 'string') {
+                        // Clean up any problematic characters
+                        return value.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+                    }
+                    return value;
+                }, 2);
+                
+                // Create filename with timestamp
+                const now = new Date();
+                const timestamp = now.toISOString().slice(0, 19).replace(/[:.]/g, '-');
+                const filename = `research-plan-${timestamp}.json`;
+                
+                // Simple, reliable method: Copy to clipboard
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(dataStr).then(() => {
+                        alert(`✅ Research plan copied to clipboard!\n\n📋 Next steps:\n1. Open any text editor (Notepad, TextEdit, VS Code, etc.)\n2. Paste with Ctrl+V (or Cmd+V on Mac)\n3. Save as: ${filename}\n\n📊 Exported: ${saveObject.totalActivities} activities, ${saveObject.totalElements} elements\n📅 ${new Date().toLocaleString()}\n\n💡 Tip: Use a plain text editor (like Notepad) to avoid formatting issues`);
+                    }).catch((error) => {
+                        showDataInPrompt(dataStr, filename);
+                    });
+                } else {
+                    showDataInPrompt(dataStr, filename);
+                }
+                
+            } catch (error) {
+                console.error('Save error:', error);
+                alert('❌ Error preparing save data: ' + error.message);
+            }
+        }
+        
+        function showDataInPrompt(dataStr, filename) {
+            alert(`💾 Manual Save Required\n\nYour browser settings prevent automatic saving.\nClick OK to see the data that you can copy manually.`);
+            
+            // Show data in chunks if too long for prompt
+            if (dataStr.length > 2000) {
+                alert(`📄 Data is large - will show in parts.\n\nFilename: ${filename}\n\nPart 1 coming next...`);
+                
+                const chunk1 = dataStr.substring(0, 2000);
+                const remainingLength = dataStr.length - 2000;
+                
+                prompt(`📋 PART 1 - Copy this text:\n\n(${remainingLength} more characters remaining)`, chunk1);
+                
+                if (confirm('Show remaining data?')) {
+                    prompt(`📋 PART 2 - Copy and append this text:`, dataStr.substring(2000));
+                }
+            } else {
+                prompt(`📋 Copy this data and save as ${filename}:`, dataStr);
+            }
+        }
+        
+        function loadData() {
+            console.log('loadData function called');
+            
+            // Create file input
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.json,application/json,text/plain';
+            fileInput.style.display = 'none';
+            
+            // Handle file selection
+            fileInput.onchange = function(event) {
+                const file = event.target.files[0];
+                console.log('File selected:', file ? file.name : 'none');
+                
+                if (!file) {
+                    console.log('No file selected');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        console.log('File reading completed');
+                        const jsonText = e.target.result;
+                        const loadedData = JSON.parse(jsonText);
+                        
+                        console.log('JSON parsed successfully');
+                        
+                        // Sanitize the loaded data
+                        const sanitizedData = sanitizeData(loadedData);
+                        
+                        // Validate the sanitized data
+                        if (isValidData(sanitizedData)) {
+                            // Handle different data formats
+                            if (sanitizedData.data && Array.isArray(sanitizedData.data)) {
+                                // New format with metadata
+                                researchData = sanitizedData.data;
+                                
+                                // Restore research start date if available
+                                if (sanitizedData.researchStartDate) {
+                                    researchStartDate = sanitizedData.researchStartDate;
+                                    const dateInput = document.getElementById('researchStartDate');
+                                    if (dateInput) {
+                                        dateInput.value = researchStartDate;
+                                    }
+                                }
+                                
+                                console.log('Data loaded from new format:', researchData.length, 'activities');
+                                alert(`✅ Data loaded successfully!\n📊 ${sanitizedData.totalActivities || researchData.length} activities\n📅 Exported: ${sanitizedData.exportDate ? new Date(sanitizedData.exportDate).toLocaleString() : 'Unknown date'}`);
+                                
+                            } else if (Array.isArray(sanitizedData)) {
+                                // Old format (direct array)
+                                researchData = sanitizedData;
+                                console.log('Data loaded from array format:', researchData.length, 'activities');
+                                alert(`✅ Data loaded successfully!\n📊 ${researchData.length} activities loaded`);
+                                
+                            } else {
+                                throw new Error('Invalid file format - expected array or object with data property');
+                            }
+                            
+                            // Update the interface
+                            recalculateDates();
+                            renderTable();
+                            console.log('Table re-rendered after data load');
+                            
+                        } else {
+                            throw new Error('Invalid data structure detected');
+                        }
+                        
+                    } catch (error) {
+                        console.error('Error loading data:', error);
+                        let errorMsg = '❌ Error loading file:\n\n' + error.message;
+                        
+                        if (error instanceof SyntaxError) {
+                            errorMsg += '\n\n💡 Make sure the file contains valid JSON data from the Research Planner.';
+                        }
+                        
+                        alert(errorMsg);
+                    }
+                };
+                
+                reader.onerror = function() {
+                    console.error('FileReader error occurred');
+                    alert('❌ Error reading the selected file. Please try again.');
+                };
+                
+                // Start reading the file
+                console.log('Starting to read file...');
+                reader.readAsText(file);
+                
+                // Clean up
+                if (fileInput.parentNode) {
+                    fileInput.parentNode.removeChild(fileInput);
+                }
+            };
+            
+            // Add to DOM and click
+            document.body.appendChild(fileInput);
+            console.log('File input added to DOM, triggering click...');
+            fileInput.click();
+        }
+        
+        // Function to validate the loaded data
+        function isValidData(data) {
+            // Check if data is an object or an array
+            if (typeof data === 'object' && data !== null) {
+                // If it's an object, check for required properties
+                if (data.data && Array.isArray(data.data)) {
+                    return true; // Valid new format
+                }
+            } else if (Array.isArray(data)) {
+                return true; // Valid old format
+            }
+            return false; // Invalid data structure
+        }
+
+        // Function to sanitize the loaded data
+        function sanitizeData(data) {
+            // If data is an object, sanitize each property
+            if (typeof data === 'object' && data !== null) {
+                const sanitizedObject = {};
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        // Sanitize each value
+                        sanitizedObject[key] = sanitizeValue(data[key]);
+                    }
+                }
+                return sanitizedObject;
+            } else if (Array.isArray(data)) {
+                // If it's an array, sanitize each item
+                return data.map(item => sanitizeValue(item));
+            }
+            return data; // Return as is if not an object or array
+        }
+
+        // Function to sanitize a value
+        function sanitizeValue(value) {
+            // If the value is a string, sanitize it
+            if (typeof value === 'string') {
+                return DOMPurify.sanitize(value);
+            }
+            return value; // Return non-string values as is
+        }
+        
+        // ================================
+        // INITIALIZATION
+        // ================================
+        
+        // Initialize the application
+        recalculateDates();
+        renderTable();
+        setMode('edit');
+        setupEventDelegation();
+    </script>
+</body>
+</html>
