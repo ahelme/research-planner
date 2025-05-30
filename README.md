@@ -30,3 +30,6 @@ A single-page HTML &amp; Javascript web app to plan a PhD or Research Project
 ### 	Drag handles:
 * Blue for activities, grey for elements
 * Final three columns have colours automatically applied when data is added manually
+
+
+![Research-Planner](https://github.com/user-attachments/assets/6ee4bb6c-d9a6-4bad-a281-9622f2da1d87)
