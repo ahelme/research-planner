@@ -12,7 +12,8 @@ Download the HTML file to your desktop, then open it in your web-browser of choi
 Alternatively, you can access the app here on Github Pages (however, if others are using the app you may lose your data):
 
 
-## Purpose: This is a Research Planner that allows users to manage research activities and elements with dates, progress tracking, and supervisor communication.
+## Purpose: 
+This is a Research Planner that allows users to manage research activities and elements with dates, progress tracking, and supervisor communication.
 * 	The application is completely self-contained in this single HTML file - just save it and open in any modern web browser.
    
 ## Structure:
