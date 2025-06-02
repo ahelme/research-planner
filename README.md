@@ -8,6 +8,11 @@ A self-contained, single-file web application for planning and tracking academic
 ![Security](https://img.shields.io/badge/security-enterprise%20grade-green)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
+## User Interface
+
+![Research-Planner 1 4 0](https://github.com/user-attachments/assets/5f7f663a-c459-49de-af3f-70148861d24d)
+
+
 ## ✨ Key Features
 
 ### 📋 **Research or Project Planning**
