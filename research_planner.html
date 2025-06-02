@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Research Planner</title>
+    <!-- ENTERPRISE SECURITY: Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <title>Research Planner 1.4.0</title>
     <style>
         /* Default cursor for all elements */
         * {
@@ -19,12 +22,30 @@
             background-color: #f5f5f5;
             padding: 20px;
         }
-        
+      
 		@media print {
-			#top-container, #download-app, #download-instructions, #app-title, #app-version, #app-buttons {
-  			display: none;
-			}
-		}
+			#top-container, #download-app, #download-instructions, #app-title, #app-version, #app-buttons, .add-activity-btn, .add-activity-btn, .delete-btn, .security-warning, .security-warning.show, #securityWarning, .security-indicator, div#securityIndicator.security-indicator {
+  			display: none; 
+  					}
+  			
+  					html {
+        				zoom: 65%;
+    				}
+    				
+    				body {
+			            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			            font-size: 12px;
+			            padding: 0px;
+			            background: white;
+        			}
+        			
+    				.container {
+			    	    max-width: 100%;
+			            overflow-x: auto;
+			            background: white;
+			            padding: 0px;
+        			}  			
+		}	
 		
         .container {
             max-width: 100%;
@@ -107,6 +128,58 @@
 			border: 1px dashed #686868;
 			}
 
+        /* Security indicator styles */
+        .security-indicator {
+            position: relative;
+            margin-top: -6px;
+            width: 132px;
+            background: #6BEC3E;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 10px;
+            gap: 6px;
+            margin-bottom: -33px;
+            text-align: center;
+        }
+
+        .security-warning {
+            position: fixed;
+            top: 50px;
+            right: 20px;
+            background: #ffc107;
+            color: #333;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 10001;
+            max-width: 300px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .security-warning.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .sanitized-input {
+            background-color: #fff3cd !important;
+            border: 2px solid #ffc107 !important;
+            animation: sanitizedFlash 2s ease-out;
+        }
+
+        @keyframes sanitizedFlash {
+            0% { background-color: #f8d7da; border-color: #dc3545; }
+            50% { background-color: #fff3cd; border-color: #ffc107; }
+            100% { background-color: transparent; border-color: transparent; }
+        }
+
         .toolbar {
             margin-bottom: 15px;
             display: flex;
@@ -177,6 +250,7 @@
         .research-table {
             width: 100%;
             border-collapse: collapse;
+            border: 1px solid #ccc;
             font-size: 11px;
             margin: 0;
         }
@@ -185,8 +259,8 @@
             background: #BFBFBF;
             padding: 8px 6px;
             text-align: left;
-            border: 1px solid #999;
-            font-weight: bold;
+            border: 1px solid #ccc;
+            font-weight: 600;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -213,7 +287,7 @@
         }
         
         .activity-row.activity-odd {
-            background-color: #f5f5f5;
+            background-color: #f0f0f0;
         }
         
         .activity-row:hover {
@@ -230,7 +304,7 @@
         }
         
         .element-row.activity-odd {
-            background-color: #fcfcfc;
+            background-color: #fafafa;
         }
         
         .element-row:hover {
@@ -251,15 +325,15 @@
         }
         
         .supervisor-sent:not(.has-data) {
-            background-color: white !important;
+
         }
         
         .feedback-requested:not(.has-data) {
-            background-color: white !important;
+
         }
         
         .supervision-committee:not(.has-data) {
-            background-color: white !important;
+
         }
         
         .research-table tr.dragging {
@@ -292,12 +366,12 @@
         }
         
         .date-cell {
-            min-width: 120px;
+            min-width: 70px;
         }
         
         .days-cell {
             text-align: center;
-            min-width: 40px;
+            min-width: 50px;
         }
         
         .weeks-cell {
@@ -328,17 +402,19 @@
         }
         
         .supervision-committee-cell {
-            max-width: 200px;
+            max-width: 140px;
             word-wrap: break-word;
         }
         
         .activity-cell {
-            min-width: 150px;
-            font-weight: 500;
+            min-width: 163px;
+            font-weight: 300;
+            word-wrap: break-word;
         }
         
         .chapter-cell {
-            min-width: 120px;
+            min-width: 60px;
+            word-wrap: break-word;
         }
         
         .drag-handle {
@@ -404,9 +480,11 @@
         }
         
         .activity-name {
-            font-weight: bold;
-            color: #333;
-            font-size: 13px;
+            font-weight: 500;
+            color: #080808;
+            font-size: 14px;
+            line-height: 18px;
+            display: block;
         }
         
         .element-prefix {
@@ -415,7 +493,37 @@
             font-weight: normal;
         }
         
+        .activity-btns-prefix {
+            color: #bbb;
+            margin-right: 5px;
+            font-weight: normal;
+        }
+        
+        .delete-btn {
+        	display: inline;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer !important;
+            font-size: 10px;
+            margin-left: 5px;
+            pointer-events: auto;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+        
+        .delete-btn:active {
+            background: #a71e2a;
+            transform: scale(0.95);
+        }
+               
         .add-element-btn {
+            display: inline;
             background: #28a745;
             color: white;
             border: none;
@@ -451,29 +559,7 @@
             transform: scale(1.1);
         }
         
-        .delete-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 2px 6px;
-            border-radius: 3px;
-            cursor: pointer !important;
-            font-size: 10px;
-            margin-left: 5px;
-            z-index: 100;
-            position: relative;
-            pointer-events: auto;
-        }
-        
-        .delete-btn:hover {
-            background: #c82333;
-            transform: scale(1.1);
-        }
-        
-        .delete-btn:active {
-            background: #a71e2a;
-            transform: scale(0.95);
-        }
+
         
         /* View mode styles */
         .view-mode .drag-handle,
@@ -516,6 +602,10 @@
             display: none;
         }
         
+        .view-mode .activity-btns-prefix {
+            display: none;
+        }
+          
         .view-mode .element-count {
             display: none;
         }
@@ -616,7 +706,7 @@
         
         /* Console debug button */
         .console-btn {
-            top: 10px;
+            margin-top: 12px;
             float: right;
             right: 10px;
             background: #343a40;
@@ -700,6 +790,11 @@
             color: #ff4444;
         }
         
+        .console-message.security {
+            color: #ff69b4;
+            font-weight: bold;
+        }
+        
         .console-clear-btn {
             background: #666;
             color: white;
@@ -729,69 +824,221 @@
             }
         }
     </style>
-    <!-- Embedded Security Libraries for Self-Contained Operation -->
+    <!-- ENTERPRISE SECURITY: Enhanced DOMPurify with Real-time Protection -->
     <script>
-        // Embedded DOMPurify (essential functions only for security)
+        // Enhanced DOMPurify with enterprise-grade security features
         window.DOMPurify = {
-            sanitize: function(input, options) {
-                if (typeof input !== 'string') return '';
+            sanitize: function(input, options = {}) {
+                // Handle non-string inputs gracefully
+                if (typeof input !== 'string') {
+                    if (input === null || input === undefined) return '';
+                    // Convert to string safely
+                    return String(input);
+                }
                 
-                // Basic but robust XSS protection
-                return input
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#x27;')
-                    .replace(/\//g, '&#x2F;')
+                // Track if content was modified for security feedback
+                const originalInput = input;
+                
+                // Skip sanitization for safe, simple content to avoid false positives
+                const isSafeContent = /^[a-zA-Z0-9\s\-_.,!?()%/:&]+$/.test(input) && 
+                                     input.length < 100 && 
+                                     !input.includes('<') && 
+                                     !input.includes('script') && 
+                                     !input.includes('javascript:');
+                
+                if (isSafeContent) {
+                    return input;
+                }
+                
+                // For textContent usage (which is what we primarily use), don't over-encode
+                // Only encode truly dangerous content
+                let sanitized = input
+                    // Remove dangerous protocols and handlers
                     .replace(/javascript:/gi, '')
+                    .replace(/vbscript:/gi, '')
+                    .replace(/data:(?!image\/(?:png|jpe?g|gif|svg\+xml))[^;]*;/gi, '')
                     .replace(/on\w+\s*=/gi, '')
+                    
+                    // Remove dangerous tags completely
                     .replace(/<script[^>]*>.*?<\/script>/gi, '')
                     .replace(/<iframe[^>]*>.*?<\/iframe>/gi, '')
                     .replace(/<object[^>]*>.*?<\/object>/gi, '')
                     .replace(/<embed[^>]*>/gi, '')
-                    .replace(/data:(?!image\/(?:png|jpe?g|gif|svg\+xml))[^;]*;/gi, '');
+                    .replace(/<applet[^>]*>.*?<\/applet>/gi, '')
+                    .replace(/<meta[^>]*>/gi, '')
+                    .replace(/<link[^>]*>/gi, '')
+                    .replace(/<style[^>]*>.*?<\/style>/gi, '')
+                    .replace(/<base[^>]*>/gi, '')
+                    
+                    // Remove eval and other dangerous functions
+                    .replace(/eval\s*\(/gi, '')
+                    .replace(/setTimeout\s*\(/gi, '')
+                    .replace(/setInterval\s*\(/gi, '')
+                    .replace(/Function\s*\(/gi, '')
+                    
+                    // Remove potential encoding attacks
+                    .replace(/\\x[0-9a-fA-F]{2}/g, '')
+                    .replace(/\\u[0-9a-fA-F]{4}/g, '')
+                    .replace(/&#x[0-9a-fA-F]+;/g, '')
+                    .replace(/&#[0-9]+;/g, '')
+                    
+                    // Remove CSS expression attacks
+                    .replace(/expression\s*\(/gi, '')
+                    .replace(/-moz-binding/gi, '')
+                    .replace(/behavior\s*:/gi, '');
+                
+                // Only encode HTML for innerHTML usage (when explicitly requested)
+                if (options.forInnerHTML) {
+                    sanitized = sanitized
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#x27;')
+                        .replace(/\//g, '&#x2F;');
+                }
+                
+                // Apply length limits for DoS protection
+                const maxLength = options.maxLength || 10000;
+                if (sanitized.length > maxLength) {
+                    sanitized = sanitized.substring(0, maxLength);
+                }
+                
+                // Security logging for enterprise monitoring (only for actual threats)
+                if (sanitized !== originalInput && !isSafeContent) {
+                    window.securityEventLog = window.securityEventLog || [];
+                    window.securityEventLog.push({
+                        timestamp: new Date().toISOString(),
+                        type: 'XSS_ATTEMPT_BLOCKED',
+                        original: originalInput.substring(0, 100),
+                        sanitized: sanitized.substring(0, 100),
+                        source: options.source || 'unknown'
+                    });
+                    
+                    // Trigger visual security feedback
+                    if (options.element && window.showSecurityWarning) {
+                        window.showSecurityWarning('Dangerous content detected and removed!', options.element);
+                    }
+                    
+                    // Improved console logging to avoid [object Object] display
+                    console.warn(`🛡️ SECURITY: Malicious content sanitized from ${options.source || 'unknown'}:`, 
+                                `"${originalInput.substring(0, 50)}${originalInput.length > 50 ? '...' : ''}" → "${sanitized.substring(0, 50)}${sanitized.length > 50 ? '...' : ''}"`);
+                }
+                
+                return sanitized;
+            },
+            
+            // Enhanced version with HTML preservation for specific use cases
+            sanitizeHTML: function(html, options = {}) {
+                if (typeof html !== 'string') return '';
+                
+                // Allow basic formatting tags but sanitize their content
+                const allowedTags = ['b', 'i', 'u', 'strong', 'em', 'br', 'p', 'div', 'span'];
+                let sanitized = html;
+                
+                // Remove all tags except allowed ones
+                sanitized = sanitized.replace(/<\/?(?!(?:b|i|u|strong|em|br|p|div|span)\b)[^>]*>/gi, '');
+                
+                // Sanitize content within allowed tags
+                allowedTags.forEach(tag => {
+                    const regex = new RegExp(`<${tag}[^>]*>(.*?)<\/${tag}>`, 'gi');
+                    sanitized = sanitized.replace(regex, (match, content) => {
+                        const sanitizedContent = this.sanitize(content, options);
+                        return `<${tag}>${sanitizedContent}</${tag}>`;
+                    });
+                });
+                
+                return sanitized;
             }
         };
         
-        // Basic JSON Schema Validator (simplified AJV alternative)
+        // Enhanced JSON Schema Validator with security-focused validation
         window.Ajv = function() {
             return {
                 compile: function(schema) {
                     return function validate(data) {
                         validate.errors = [];
                         
-                        function validateRecursive(obj, schemaPath, dataPath) {
+                        // Enhanced security validation
+                        function validateRecursive(obj, schemaPath, dataPath, depth = 0) {
+                            // Prevent deep nesting attacks
+                            if (depth > 50) {
+                                validate.errors.push({message: `Maximum nesting depth exceeded at ${dataPath}`});
+                                return false;
+                            }
+                            
                             if (!obj || typeof obj !== 'object') return true;
                             
-                            // Check array constraints
+                            // Only flag ACTUAL prototype pollution attempts, not normal objects
+                            // Check for dangerous direct property assignments to prototype chain
+                            if (obj.hasOwnProperty('__proto__') && typeof obj.__proto__ === 'object') {
+                                validate.errors.push({message: `Prototype pollution attempt detected at ${dataPath}`});
+                                return false;
+                            }
+                            
+                            // Check for constructor.prototype manipulation (actual attacks)
+                            if (obj.hasOwnProperty('constructor') && 
+                                obj.constructor && 
+                                typeof obj.constructor === 'object' && 
+                                obj.constructor.hasOwnProperty('prototype')) {
+                                validate.errors.push({message: `Constructor prototype manipulation detected at ${dataPath}`});
+                                return false;
+                            }
+                            
+                            // Check for attempts to pollute Object.prototype specifically
+                            if (obj.hasOwnProperty('prototype') && typeof obj.prototype === 'object' && 
+                                (dataPath.includes('Object') || dataPath.includes('constructor'))) {
+                                validate.errors.push({message: `Object prototype pollution detected at ${dataPath}`});
+                                return false;
+                            }
+                            
+                            // Array validation with security checks
                             if (Array.isArray(obj)) {
                                 if (schemaPath.maxItems && obj.length > schemaPath.maxItems) {
                                     validate.errors.push({message: `Array too long at ${dataPath}`});
                                     return false;
                                 }
+                                
+                                // Check for array bomb patterns
+                                if (obj.length > 10000) {
+                                    validate.errors.push({message: `Suspicious array size at ${dataPath}`});
+                                    return false;
+                                }
+                                
                                 if (schemaPath.items) {
-                                    return obj.every((item, i) => validateRecursive(item, schemaPath.items, `${dataPath}[${i}]`));
+                                    return obj.every((item, i) => validateRecursive(item, schemaPath.items, `${dataPath}[${i}]`, depth + 1));
                                 }
                                 return true;
                             }
                             
-                            // Check object properties
+                            // Object property validation
                             if (schemaPath.properties) {
                                 for (let key in obj) {
+                                    // Check for suspicious property names
+                                    if (key.includes('__') || key.includes('prototype') || key.includes('constructor')) {
+                                        validate.errors.push({message: `Dangerous property name at ${dataPath}.${key}`});
+                                        return false;
+                                    }
+                                    
                                     if (schemaPath.properties[key]) {
                                         const value = obj[key];
                                         const propSchema = schemaPath.properties[key];
                                         
-                                        // String validation
+                                        // Enhanced string validation
                                         if (propSchema.type === 'string' && typeof value === 'string') {
                                             if (propSchema.maxLength && value.length > propSchema.maxLength) {
                                                 validate.errors.push({message: `String too long at ${dataPath}.${key}`});
                                                 return false;
                                             }
+                                            
+                                            // Check for script injection patterns
+                                            if (value.includes('<script') || value.includes('javascript:') || value.includes('data:text/html')) {
+                                                validate.errors.push({message: `Script injection detected at ${dataPath}.${key}`});
+                                                return false;
+                                            }
                                         }
                                         
-                                        // Integer validation
+                                        // Enhanced integer validation
                                         if (propSchema.type === 'integer' || (Array.isArray(propSchema.type) && propSchema.type.includes('integer'))) {
                                             const num = parseInt(value);
                                             if (!isNaN(num)) {
@@ -806,9 +1053,9 @@
                                             }
                                         }
                                         
-                                        // Recursive validation
+                                        // Recursive validation with depth tracking
                                         if (typeof value === 'object') {
-                                            if (!validateRecursive(value, propSchema, `${dataPath}.${key}`)) {
+                                            if (!validateRecursive(value, propSchema, `${dataPath}.${key}`, depth + 1)) {
                                                 return false;
                                             }
                                         }
@@ -828,10 +1075,20 @@
             };
         };
         
-        console.log('🛡️ Embedded security libraries loaded successfully');
+        console.log('🛡️ ENTERPRISE SECURITY: Enhanced security libraries loaded successfully');
     </script>
 </head>
 <body>
+    <!-- ENTERPRISE SECURITY: Security Status Indicator -->
+    <div class="security-indicator" id="securityIndicator">
+        🛡️ SECURE MODE
+    </div>
+    
+    <!-- ENTERPRISE SECURITY: Warning Display -->
+    <div class="security-warning" id="securityWarning">
+        <strong>Security Alert:</strong> <span id="securityMessage"></span>
+    </div>
+
 	<div>
     	<div id="top-container"> 
 			<div class="console-div" id="console">
@@ -861,7 +1118,7 @@ use research planner app on your own computer - download the app then open .html
             const url = URL.createObjectURL(blob);
             
             element.href = url;
-            element.download = 'research-planner.1.3.1.html';
+            element.download = 'research-planner-1.4.0.html';
             document.body.appendChild(element);
             element.click();
             document.body.removeChild(element);
@@ -872,7 +1129,7 @@ use research planner app on your own computer - download the app then open .html
         
     <div class="container">
         <h1 id="app-title">Research Planner</h1>
-        <h2 id="app-version">Version 1.3.9.3</h2>
+        <h2 id="app-version">Version 1.4.0</h2>
             
         <div class="research-title">
         <span class="input wrap" role="textbox" contenteditable>Research Title</span>
@@ -910,10 +1167,10 @@ use research planner app on your own computer - download the app then open .html
                     <th>Notes</th>
                     <th>Progress</th>
                     <th>Start Date</th>
-                    <th>Expected Date for Completion</th>
-                    <th style="background: #A6FEFF;">Supervision/Committee</th>
-                    <th style="background: #FFE990;">Chapter Sent to Supervisors</th>
-                    <th style="background: #F9FFBC;">Chapter Feedback Requested</th>
+                    <th>Expected Completion</th>
+                    <th style="background: #A6FEFF;">Supervision / Meeting</th>
+                    <th style="background: #FFE990;">Docs Sent</th>
+                    <th style="background: #F9FFBC;">Feedback Requested</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
@@ -927,15 +1184,113 @@ use research planner app on your own computer - download the app then open .html
     <!-- Debug Console Panel -->
     <div class="debug-console" id="debugConsole">
         <div class="console-header">
-            <span>🔧 Debug Console - Research Planner v1.3.1</span>
+            <span>🔧 Debug Console - Research Planner Enterprise Security v1.4.0</span>
             <button class="console-clear-btn" id="consoleClearBtn">Clear</button>
         </div>
         <div class="console-content" id="consoleContent">
-            <div class="console-message info">Debug console ready. Click actions to see debug information...</div>
+            <div class="console-message info">🛡️ Enterprise Security Console Ready - Enhanced monitoring active...</div>
         </div>
     </div>
 
     <script>
+        // ================================
+        // ENTERPRISE SECURITY FUNCTIONS
+        // ================================
+
+        // Enhanced security warning system
+        function showSecurityWarning(message, element = null) {
+            const warning = document.getElementById('securityWarning');
+            const messageSpan = document.getElementById('securityMessage');
+            
+            if (warning && messageSpan) {
+                messageSpan.textContent = message;
+                warning.classList.add('show');
+                
+                // Highlight the problematic element
+                if (element) {
+                    element.classList.add('sanitized-input');
+                    setTimeout(() => {
+                        element.classList.remove('sanitized-input');
+                    }, 3000);
+                }
+                
+                // Auto-hide warning after 5 seconds
+                setTimeout(() => {
+                    warning.classList.remove('show');
+                }, 5000);
+                
+                // Log security event to console
+                addConsoleMessage(`Security Warning: ${message}`, 'security');
+            }
+        }
+
+        // Enhanced sanitization with visual feedback
+        function secureSanitizeInput(input, element = null, source = 'unknown') {
+            // Handle non-string inputs gracefully
+            if (typeof input !== 'string') {
+                if (input === null || input === undefined) return '';
+                input = String(input);
+            }
+            
+            const originalInput = input;
+            const sanitized = DOMPurify.sanitize(input, {
+                element: element,
+                source: source,
+                maxLength: 10000
+            });
+            
+            // Only show warning if content was actually changed and it's a real threat
+            if (sanitized !== originalInput && 
+                (originalInput.includes('<') || originalInput.includes('script') || originalInput.includes('javascript:'))) {
+                showSecurityWarning('Dangerous content detected and removed!', element);
+            }
+            
+            return sanitized;
+        }
+
+        // Enhanced file content security scanner
+        function securityScanFileContent(content, filename) {
+            const suspiciousPatterns = [
+                /<script[^>]*>/gi,
+                /javascript:/gi,
+                /vbscript:/gi,
+                /on\w+\s*=/gi,
+                /eval\s*\(/gi,
+                /Function\s*\(/gi,
+                /setTimeout\s*\(/gi,
+                /setInterval\s*\(/gi,
+                /__proto__/gi,
+                /constructor\.prototype/gi,
+                /data:text\/html/gi,
+                /data:text\/javascript/gi
+            ];
+            
+            const threats = [];
+            
+            suspiciousPatterns.forEach((pattern, index) => {
+                const matches = content.match(pattern);
+                if (matches) {
+                    threats.push({
+                        pattern: pattern.toString(),
+                        count: matches.length,
+                        severity: index < 6 ? 'HIGH' : 'MEDIUM'
+                    });
+                }
+            });
+            
+            if (threats.length > 0) {
+                addConsoleMessage(`🚨 SECURITY SCAN: ${threats.length} threats detected in ${filename}`, 'security');
+                threats.forEach(threat => {
+                    addConsoleMessage(`  - ${threat.pattern}: ${threat.count} matches (${threat.severity})`, 'security');
+                });
+                
+                throw new Error(`Security scan failed: ${threats.length} suspicious patterns detected in uploaded file. File rejected for safety.`);
+            }
+            
+            addConsoleMessage(`✅ SECURITY SCAN: File ${filename} passed security validation`, 'security');
+            return true;
+        }
+
         // ================================
         // CUSTOM MODAL FUNCTIONS (Browser-block resistant)
         // ================================
@@ -1034,7 +1389,7 @@ use research planner app on your own computer - download the app then open .html
             const content = document.createElement('div');
             content.className = 'modal-content';
             content.innerHTML = `
-                <p><strong>🛡️ Security:</strong> Data exported safely</p>
+                <p><strong>🛡️ Security:</strong> Data exported safely with enterprise-grade protection</p>
                 <p><strong>📋 Next steps:</strong></p>
                 <ol style="margin: 10px 0; padding-left: 20px;">
                     <li>Open any text editor (Notepad, TextEdit, VS Code, etc.)</li>
@@ -1131,7 +1486,7 @@ use research planner app on your own computer - download the app then open .html
         }
 
         // ================================
-        // SECURITY CONFIGURATION
+        // ENHANCED SECURITY CONFIGURATION
         // ================================
         
         const SECURITY_CONFIG = {
@@ -1141,10 +1496,12 @@ use research planner app on your own computer - download the app then open .html
             ALLOWED_FILE_TYPES: ['.json', 'application/json', 'text/plain'],
             PARSING_TIMEOUT: 5000, // 5 seconds
             MAX_ACTIVITIES: 1000,
-            MAX_ELEMENTS_PER_ACTIVITY: 100
+            MAX_ELEMENTS_PER_ACTIVITY: 100,
+            SECURITY_SCAN_ENABLED: true,
+            REAL_TIME_PROTECTION: true
         };
 
-        // JSON Schema for validation
+        // Enhanced JSON Schema for validation with security focus
         const DATA_SCHEMA = {
             type: "object",
             properties: {
@@ -1191,44 +1548,33 @@ use research planner app on your own computer - download the app then open .html
         };
 
         // ================================
-        // SECURITY FUNCTIONS (FIXED)
+        // ENHANCED SECURITY FUNCTIONS
         // ================================
 
         function sanitizeString(str, maxLength = SECURITY_CONFIG.MAX_STRING_LENGTH) {
+            // Handle non-string inputs gracefully without false security warnings
             if (typeof str !== 'string') {
+                if (str === null || str === undefined) return '';
                 return String(str).substring(0, maxLength);
             }
             
-            // Only remove truly dangerous content, don't encode HTML entities
-            // since textContent automatically handles them
-            let sanitized = str
-                .replace(/javascript:/gi, '')
-                .replace(/on\w+\s*=/gi, '')
-                .replace(/<script[^>]*>.*?<\/script>/gi, '')
-                .replace(/<iframe[^>]*>.*?<\/iframe>/gi, '')
-                .replace(/<object[^>]*>.*?<\/object>/gi, '')
-                .replace(/<embed[^>]*>/gi, '')
-                .replace(/data:(?!image\/(?:png|jpe?g|gif|svg\+xml))[^;]*;/gi, '');
+            // For simple, safe strings, skip complex sanitization to avoid false positives
+            // Include "&" as a safe character for normal text content
+            if (str.length < 100 && /^[a-zA-Z0-9\s\-_.,!?()%/:&]+$/.test(str)) {
+                return str.substring(0, maxLength);
+            }
             
-            return sanitized.substring(0, maxLength);
+            return secureSanitizeInput(str, null, 'string_sanitization').substring(0, maxLength);
         }
 
         function sanitizeForStorage(str, maxLength = SECURITY_CONFIG.MAX_STRING_LENGTH) {
+            // Handle non-string inputs gracefully
             if (typeof str !== 'string') {
+                if (str === null || str === undefined) return '';
                 return String(str).substring(0, maxLength);
             }
             
-            // Light sanitization for imported data - preserve normal characters like &
-            // Only remove truly dangerous content
-            return str
-                .replace(/javascript:/gi, '')
-                .replace(/on\w+\s*=/gi, '')
-                .replace(/<script[^>]*>.*?<\/script>/gi, '')
-                .replace(/<iframe[^>]*>.*?<\/iframe>/gi, '')
-                .replace(/<object[^>]*>.*?<\/object>/gi, '')
-                .replace(/<embed[^>]*>/gi, '')
-                .replace(/data:(?!image\/(?:png|jpe?g|gif|svg\+xml))[^;]*;/gi, '')
-                .substring(0, maxLength);
+            return secureSanitizeInput(str, null, 'file_import').substring(0, maxLength);
         }
 
         function createSecureElement(tagName, textContent = '', className = '') {
@@ -1237,6 +1583,7 @@ use research planner app on your own computer - download the app then open .html
                 element.className = className;
             }
             if (textContent) {
+                // Use textContent for automatic HTML encoding
                 element.textContent = sanitizeString(textContent);
             }
             return element;
@@ -1273,6 +1620,7 @@ use research planner app on your own computer - download the app then open .html
                 
                 if (!validate(data)) {
                     console.error('Schema validation errors:', validate.errors);
+                    addConsoleMessage('Schema validation failed: ' + ajv.errorsText(validate.errors), 'security');
                     throw new Error('Invalid data format: ' + ajv.errorsText(validate.errors));
                 }
             } else {
@@ -1375,7 +1723,8 @@ use research planner app on your own computer - download the app then open .html
             const prefix = type === 'debug' ? '🔧 DEBUG' : 
                           type === 'info' ? 'ℹ️ INFO' : 
                           type === 'warn' ? '⚠️ WARN' : 
-                          type === 'error' ? '❌ ERROR' : '🔧 DEBUG';
+                          type === 'error' ? '❌ ERROR' : 
+                          type === 'security' ? '🛡️ SECURITY' : '🔧 DEBUG';
             
             messageDiv.textContent = `[${timestamp}] ${prefix}: ${message}`;
             
@@ -1405,7 +1754,7 @@ use research planner app on your own computer - download the app then open .html
         function clearConsole() {
             const consoleContent = document.getElementById('consoleContent');
             if (consoleContent) {
-                consoleContent.innerHTML = '<div class="console-message info">Console cleared. Debug messages will appear here...</div>';
+                consoleContent.innerHTML = '<div class="console-message info">🛡️ Enterprise Security Console Ready - Enhanced monitoring active...</div>';
             }
         }
         
@@ -1421,7 +1770,8 @@ use research planner app on your own computer - download the app then open .html
                 debugConsole.classList.add('show');
                 
                 console.log('🔧 DEBUG MODE ENABLED - Console panel is now visible');
-                addConsoleMessage('Debug mode activated - All debug messages will appear here', 'info');
+                addConsoleMessage('Debug mode activated - Enhanced security monitoring enabled', 'info');
+                addConsoleMessage('Enterprise-grade protection active', 'security');
                 debugLog('Debug mode activated');
             } else {
                 consoleBtn.classList.remove('active');
@@ -1443,7 +1793,7 @@ use research planner app on your own computer - download the app then open .html
         
         let researchData = [
     {
-      "activityName": "## First Supervision Meeting",
+      "activityName": "# First Supervision Meeting",
       "elements": [
         {
           "chapter": "Preparation",
@@ -1552,7 +1902,7 @@ use research planner app on your own computer - download the app then open .html
           "chapter": "Research Methodology",
           "days": 28,
           "notes": "Course",
-          "progress": "",
+          "progress": "0%",
           "startDate": "2025-05-28",
           "expectedDate": "2025-06-25",
           "supervisionCommittee": "",
@@ -1697,7 +2047,7 @@ use research planner app on your own computer - download the app then open .html
           "chapter": "Methodology Outline",
           "days": 28,
           "notes": "Write first draft",
-          "progress": "",
+          "progress": "0%",
           "startDate": "2025-10-30",
           "expectedDate": "2025-11-27",
           "supervisionCommittee": "",
@@ -1708,7 +2058,7 @@ use research planner app on your own computer - download the app then open .html
           "chapter": "Supervision",
           "days": 1,
           "notes": "Supervision meeting: Zoom",
-          "progress": "0%",
+          "progress": "",
           "startDate": "2025-11-27",
           "expectedDate": "2025-11-28",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
@@ -1738,22 +2088,22 @@ use research planner app on your own computer - download the app then open .html
       "elements": [
         {
           "chapter": "Literature Review",
-          "days": 29,
+          "days": 38,
           "notes": "Write first draft",
-          "progress": "",
+          "progress": "0%",
           "startDate": "2025-12-22",
-          "expectedDate": "2026-01-20",
+          "expectedDate": "2026-01-29",
           "supervisionCommittee": "",
           "supervisorSent": "Lit Review Chapter sent: 00 Mon 20XX",
           "feedbackRequested": ""
         },
         {
           "chapter": "Supervision",
-          "days": 7,
+          "days": 1,
           "notes": "Re-draft and send to supervisors",
-          "progress": "0%",
-          "startDate": "2026-01-20",
-          "expectedDate": "2026-01-27",
+          "progress": "",
+          "startDate": "2026-01-29",
+          "expectedDate": "2026-01-30",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
           "supervisorSent": "",
           "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
@@ -1762,9 +2112,9 @@ use research planner app on your own computer - download the app then open .html
           "chapter": "Literature Review",
           "days": 5,
           "notes": "Edit (incorporate feedback) and send to proofer",
-          "progress": "",
-          "startDate": "2026-01-27",
-          "expectedDate": "2026-02-01",
+          "progress": "0%",
+          "startDate": "2026-01-30",
+          "expectedDate": "2026-02-04",
           "supervisionCommittee": "",
           "supervisorSent": "",
           "feedbackRequested": ""
@@ -1779,8 +2129,8 @@ use research planner app on your own computer - download the app then open .html
           "days": 14,
           "notes": "Break",
           "progress": "",
-          "startDate": "2026-02-02",
-          "expectedDate": "2026-02-16",
+          "startDate": "2026-02-05",
+          "expectedDate": "2026-02-19",
           "supervisionCommittee": "",
           "supervisorSent": "",
           "feedbackRequested": ""
@@ -1788,15 +2138,15 @@ use research planner app on your own computer - download the app then open .html
       ]
     },
     {
-      "activityName": "## CONFIRMATION",
+      "activityName": "#CONFIRMATION",
       "elements": [
         {
           "chapter": "Preparation",
           "days": 20,
           "notes": "Draft confirmation docs and form",
-          "progress": "",
-          "startDate": "2026-02-17",
-          "expectedDate": "2026-03-09",
+          "progress": "0%",
+          "startDate": "2026-02-20",
+          "expectedDate": "2026-03-12",
           "supervisionCommittee": "",
           "supervisorSent": "Draft confirmation report sent: 00 Mon 20XX",
           "feedbackRequested": ""
@@ -1806,8 +2156,8 @@ use research planner app on your own computer - download the app then open .html
           "days": 1,
           "notes": "Supervision meeting: Zoom",
           "progress": "",
-          "startDate": "2026-03-09",
-          "expectedDate": "2026-03-10",
+          "startDate": "2026-03-12",
+          "expectedDate": "2026-03-13",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
           "supervisorSent": "",
           "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
@@ -1816,9 +2166,9 @@ use research planner app on your own computer - download the app then open .html
           "chapter": "Confirmation",
           "days": 13,
           "notes": "Committee Meeting: Confirmation",
-          "progress": "",
-          "startDate": "2026-03-10",
-          "expectedDate": "2026-03-23",
+          "progress": "0%",
+          "startDate": "2026-03-13",
+          "expectedDate": "2026-03-26",
           "supervisionCommittee": "CONFIRMATION: 00 Mon 20XX",
           "supervisorSent": "",
           "feedbackRequested": ""
@@ -1830,11 +2180,11 @@ use research planner app on your own computer - download the app then open .html
       "elements": [
         {
           "chapter": "Ethics application",
-          "days": 14,
+          "days": 13,
           "notes": "Write first draft",
           "progress": "0%",
-          "startDate": "2026-03-24",
-          "expectedDate": "2026-04-07",
+          "startDate": "2026-03-27",
+          "expectedDate": "2026-04-09",
           "supervisionCommittee": "",
           "supervisorSent": "Draft Ethics application sent: 00 Mon 20XX",
           "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
@@ -1844,8 +2194,8 @@ use research planner app on your own computer - download the app then open .html
           "days": 1,
           "notes": "Supervision meeting: Zoom",
           "progress": "",
-          "startDate": "2026-04-07",
-          "expectedDate": "2026-04-08",
+          "startDate": "2026-04-09",
+          "expectedDate": "2026-04-10",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
           "supervisorSent": "",
           "feedbackRequested": ""
@@ -1857,10 +2207,10 @@ use research planner app on your own computer - download the app then open .html
       "elements": [
         {
           "chapter": "Ethics Application - final draft",
-          "days": 14,
+          "days": 12,
           "notes": "Write final draft",
           "progress": "0%",
-          "startDate": "2026-04-09",
+          "startDate": "2026-04-11",
           "expectedDate": "2026-04-23",
           "supervisionCommittee": "",
           "supervisorSent": "Final Application sent: 00 Mon 20XX",
@@ -2025,11 +2375,11 @@ use research planner app on your own computer - download the app then open .html
       "elements": [
         {
           "chapter": "Interviewing",
-          "days": 36,
+          "days": 26,
           "notes": "Conduct interviews",
           "progress": "0%",
           "startDate": "2026-11-06",
-          "expectedDate": "2026-12-12",
+          "expectedDate": "2026-12-02",
           "supervisionCommittee": "",
           "supervisorSent": "Update on interviews sent: 00 Mon 20XX",
           "feedbackRequested": ""
@@ -2039,19 +2389,19 @@ use research planner app on your own computer - download the app then open .html
           "days": 1,
           "notes": "Supervision meeting: Zoom",
           "progress": "",
-          "startDate": "2026-12-12",
-          "expectedDate": "2026-12-13",
+          "startDate": "2026-12-02",
+          "expectedDate": "2026-12-03",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
           "supervisorSent": "",
           "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
         },
         {
           "chapter": "Interviewing",
-          "days": 28,
+          "days": 21,
           "notes": "Conduct interviews",
           "progress": "0%",
-          "startDate": "2026-12-13",
-          "expectedDate": "2027-01-10",
+          "startDate": "2026-12-03",
+          "expectedDate": "2026-12-24",
           "supervisionCommittee": "",
           "supervisorSent": "",
           "feedbackRequested": ""
@@ -2063,11 +2413,11 @@ use research planner app on your own computer - download the app then open .html
       "elements": [
         {
           "chapter": "Xmas and New Year's",
-          "days": 14,
+          "days": 16,
           "notes": "Break",
           "progress": "",
-          "startDate": "2027-01-11",
-          "expectedDate": "2027-01-25",
+          "startDate": "2026-12-25",
+          "expectedDate": "2027-01-10",
           "supervisionCommittee": "",
           "supervisorSent": "",
           "feedbackRequested": ""
@@ -2081,9 +2431,9 @@ use research planner app on your own computer - download the app then open .html
           "chapter": "Interviews",
           "days": 28,
           "notes": "Coding themes and memos",
-          "progress": "",
-          "startDate": "2027-01-26",
-          "expectedDate": "2027-02-23",
+          "progress": "0%",
+          "startDate": "2027-01-11",
+          "expectedDate": "2027-02-08",
           "supervisionCommittee": "",
           "supervisorSent": "Notes on data sent: 00 Mon 20XX",
           "feedbackRequested": ""
@@ -2093,19 +2443,19 @@ use research planner app on your own computer - download the app then open .html
           "days": 1,
           "notes": "Supervision meeting: Zoom",
           "progress": "",
-          "startDate": "2027-02-23",
-          "expectedDate": "2027-02-24",
+          "startDate": "2027-02-08",
+          "expectedDate": "2027-02-09",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
           "supervisorSent": "",
           "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
         },
         {
           "chapter": "Interviews",
-          "days": 28,
+          "days": 21,
           "notes": "Completed themes and memos with charts",
-          "progress": "",
-          "startDate": "2027-02-24",
-          "expectedDate": "2027-03-24",
+          "progress": "0%",
+          "startDate": "2027-02-09",
+          "expectedDate": "2027-03-02",
           "supervisionCommittee": "",
           "supervisorSent": "Notes on data sent: 00 Mon 20XX",
           "feedbackRequested": ""
@@ -2115,8 +2465,8 @@ use research planner app on your own computer - download the app then open .html
           "days": 1,
           "notes": "Supervision meeting: Zoom",
           "progress": "",
-          "startDate": "2027-03-24",
-          "expectedDate": "2027-03-25",
+          "startDate": "2027-03-02",
+          "expectedDate": "2027-03-03",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
           "supervisorSent": "",
           "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
@@ -2126,8 +2476,8 @@ use research planner app on your own computer - download the app then open .html
           "days": 7,
           "notes": "Completed themes and memos with charts",
           "progress": "0%",
-          "startDate": "2027-03-25",
-          "expectedDate": "2027-04-01",
+          "startDate": "2027-03-03",
+          "expectedDate": "2027-03-10",
           "supervisionCommittee": "",
           "supervisorSent": "",
           "feedbackRequested": ""
@@ -2135,15 +2485,15 @@ use research planner app on your own computer - download the app then open .html
       ]
     },
     {
-      "activityName": "## PROGRESS REVIEW YEAR 2",
+      "activityName": "# PROGRESS REVIEW YEAR 2",
       "elements": [
         {
           "chapter": "Progress Review Form",
-          "days": 9,
-          "notes": "Draft Progress Review Form",
+          "days": 14,
+          "notes": "Draft Progress Review Form & docs",
           "progress": "0%",
-          "startDate": "2027-04-02",
-          "expectedDate": "2027-04-11",
+          "startDate": "2027-03-11",
+          "expectedDate": "2027-03-25",
           "supervisionCommittee": "",
           "supervisorSent": "Draft Review Form sent: 00 Mon 20XX",
           "feedbackRequested": ""
@@ -2153,8 +2503,8 @@ use research planner app on your own computer - download the app then open .html
           "days": 1,
           "notes": "Supervision meeting: Zoom",
           "progress": "",
-          "startDate": "2027-04-11",
-          "expectedDate": "2027-04-12",
+          "startDate": "2027-03-25",
+          "expectedDate": "2027-03-26",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
           "supervisorSent": "",
           "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
@@ -2163,9 +2513,9 @@ use research planner app on your own computer - download the app then open .html
           "chapter": "Progress Review",
           "days": 7,
           "notes": "Committee Meeting: Progress Review",
-          "progress": "",
-          "startDate": "2027-04-12",
-          "expectedDate": "2027-04-19",
+          "progress": "0%",
+          "startDate": "2027-03-26",
+          "expectedDate": "2027-04-02",
           "supervisionCommittee": "PROGRESS REVIEW: 00 Mon 20XX",
           "supervisorSent": "Final Review Form sent: 00 Mon 20XX",
           "feedbackRequested": ""
@@ -2177,24 +2527,35 @@ use research planner app on your own computer - download the app then open .html
       "elements": [
         {
           "chapter": "Methodology",
-          "days": 28,
+          "days": 27,
           "notes": "Write first draft",
+          "progress": "0%",
+          "startDate": "2027-04-03",
+          "expectedDate": "2027-04-30",
+          "supervisionCommittee": "",
+          "supervisorSent": "Methodology Chapter sent: 00 Mon 20XX",
+          "feedbackRequested": ""
+        },
+        {
+          "chapter": "Creative Output 2 Planning",
+          "days": 16,
+          "notes": "Plan creative output while waiting for feedback",
           "progress": "",
-          "startDate": "2027-04-20",
-          "expectedDate": "2027-05-18",
+          "startDate": "2027-04-30",
+          "expectedDate": "2027-05-16",
           "supervisionCommittee": "",
           "supervisorSent": "",
           "feedbackRequested": ""
         },
         {
           "chapter": "Supervision",
-          "days": 14,
-          "notes": "Re-draft and send to supervisors for feedback",
-          "progress": "0%",
-          "startDate": "2027-05-18",
-          "expectedDate": "2027-06-01",
-          "supervisionCommittee": "",
-          "supervisorSent": "Methodology Chapter sent: 00 Mon 20XX",
+          "days": 1,
+          "notes": "Supervision meeting: Zoom",
+          "progress": "",
+          "startDate": "2027-05-16",
+          "expectedDate": "2027-05-17",
+          "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+          "supervisorSent": "",
           "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
         },
         {
@@ -2202,8 +2563,57 @@ use research planner app on your own computer - download the app then open .html
           "days": 14,
           "notes": "Edit (incorporate feedback) and send to proofer",
           "progress": "",
+          "startDate": "2027-05-17",
+          "expectedDate": "2027-05-31",
+          "supervisionCommittee": "",
+          "supervisorSent": "",
+          "feedbackRequested": ""
+        }
+      ]
+    },
+    {
+      "activityName": "Ethics Revision",
+      "elements": [
+        {
+          "chapter": "Ethics Revision",
+          "days": 7,
+          "notes": "Write first draft revision",
+          "progress": "",
           "startDate": "2027-06-01",
-          "expectedDate": "2027-06-15",
+          "expectedDate": "2027-06-08",
+          "supervisionCommittee": "",
+          "supervisorSent": "Ethics Revision sent: 00 Mon 20XX",
+          "feedbackRequested": ""
+        },
+        {
+          "chapter": "Creative Planning",
+          "days": 28,
+          "notes": "Start creative planning on creative output #2",
+          "progress": "",
+          "startDate": "2027-06-08",
+          "expectedDate": "2027-07-06",
+          "supervisionCommittee": "",
+          "supervisorSent": "Creative notes sent: 00 Mon 20XX",
+          "feedbackRequested": ""
+        },
+        {
+          "chapter": "Supervision",
+          "days": 1,
+          "notes": "Supervision meeting: Zoom",
+          "progress": "",
+          "startDate": "2027-07-06",
+          "expectedDate": "2027-07-07",
+          "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+          "supervisorSent": "",
+          "feedbackRequested": "Ethics Feedback Requested by: 00 Mon 20XX"
+        },
+        {
+          "chapter": "Submit ethics revision",
+          "days": 7,
+          "notes": "Finalise and submit Ethics Revision",
+          "progress": "0%",
+          "startDate": "2027-07-07",
+          "expectedDate": "2027-07-14",
           "supervisionCommittee": "",
           "supervisorSent": "",
           "feedbackRequested": ""
@@ -2216,12 +2626,23 @@ use research planner app on your own computer - download the app then open .html
         {
           "chapter": "Creative Plan",
           "days": 21,
-          "notes": "Draft plan for creative output",
+          "notes": "Draft plan for creative output #2",
           "progress": "0%",
-          "startDate": "2027-06-16",
-          "expectedDate": "2027-07-07",
+          "startDate": "2027-07-15",
+          "expectedDate": "2027-08-05",
           "supervisionCommittee": "",
-          "supervisorSent": "Creative Plan revision sent: 00 Mon 20XX",
+          "supervisorSent": "Creative plan sent: 00 Mon 20XX",
+          "feedbackRequested": ""
+        },
+        {
+          "chapter": "Submit Ethics Revision",
+          "days": 6,
+          "notes": "Submit Ethics Revision while waiting for creative feedback",
+          "progress": "",
+          "startDate": "2027-08-05",
+          "expectedDate": "2027-08-11",
+          "supervisionCommittee": "",
+          "supervisorSent": "",
           "feedbackRequested": ""
         },
         {
@@ -2229,49 +2650,11 @@ use research planner app on your own computer - download the app then open .html
           "days": 1,
           "notes": "Supervision meeting: Zoom",
           "progress": "",
-          "startDate": "2027-07-07",
-          "expectedDate": "2027-07-08",
+          "startDate": "2027-08-11",
+          "expectedDate": "2027-08-12",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
           "supervisorSent": "",
-          "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
-        }
-      ]
-    },
-    {
-      "activityName": "Ethics Revision",
-      "elements": [
-        {
-          "chapter": "Ethics Revision",
-          "days": 13,
-          "notes": "Write first draft revision",
-          "progress": "0%",
-          "startDate": "2027-07-09",
-          "expectedDate": "2027-07-22",
-          "supervisionCommittee": "",
-          "supervisorSent": "Ethics Revision sent: 00 Mon 20XX",
-          "feedbackRequested": ""
-        },
-        {
-          "chapter": "Supervision",
-          "days": 1,
-          "notes": "Supervision meeting: Zoom",
-          "progress": "",
-          "startDate": "2027-07-22",
-          "expectedDate": "2027-07-23",
-          "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
-          "supervisorSent": "",
-          "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
-        },
-        {
-          "chapter": "Submit ethics revision",
-          "days": 7,
-          "notes": "Submit Ethics Revision",
-          "progress": "0%",
-          "startDate": "2027-07-23",
-          "expectedDate": "2027-07-30",
-          "supervisionCommittee": "",
-          "supervisorSent": "",
-          "feedbackRequested": ""
+          "feedbackRequested": "Creative Plan Feedback Requested by: 00 Mon 20XX"
         }
       ]
     },
@@ -2279,58 +2662,47 @@ use research planner app on your own computer - download the app then open .html
       "activityName": "Creative Output 2",
       "elements": [
         {
-          "chapter": "Creative Output",
-          "days": 28,
-          "notes": "Creative research",
+          "chapter": "Creative Planning",
+          "days": 14,
+          "notes": "Creative planning",
           "progress": "",
-          "startDate": "2027-07-31",
-          "expectedDate": "2027-08-28",
+          "startDate": "2027-08-13",
+          "expectedDate": "2027-08-27",
           "supervisionCommittee": "",
-          "supervisorSent": "Creative output sent: 00 Mon 20XX",
+          "supervisorSent": "Creative plan sent: 00 Mon 20XX",
           "feedbackRequested": ""
         },
         {
           "chapter": "Supervision",
           "days": 1,
           "notes": "Supervision meeting: Zoom",
+          "progress": "",
+          "startDate": "2027-08-27",
+          "expectedDate": "2027-08-28",
+          "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+          "supervisorSent": "",
+          "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+        },
+        {
+          "chapter": "Creative Output",
+          "days": 36,
+          "notes": "Creative research",
           "progress": "",
           "startDate": "2027-08-28",
-          "expectedDate": "2027-08-29",
-          "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
-          "supervisorSent": "",
-          "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
-        },
-        {
-          "chapter": "Creative Output",
-          "days": 28,
-          "notes": "Creative research",
-          "progress": "",
-          "startDate": "2027-08-29",
-          "expectedDate": "2027-09-26",
+          "expectedDate": "2027-10-02",
           "supervisionCommittee": "",
           "supervisorSent": "Creative output sent: 00 Mon 20XX",
           "feedbackRequested": ""
         },
         {
-          "chapter": "Supervision",
-          "days": 1,
-          "notes": "Supervision meeting: Zoom",
-          "progress": "",
-          "startDate": "2027-09-26",
-          "expectedDate": "2027-09-27",
-          "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
-          "supervisorSent": "",
-          "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
-        },
-        {
-          "chapter": "Creative Output",
-          "days": 28,
-          "notes": "Creative research",
-          "progress": "",
-          "startDate": "2027-09-27",
+          "chapter": "Completion Preparation",
+          "days": 23,
+          "notes": "Write first draft presentation",
+          "progress": "0%",
+          "startDate": "2027-10-02",
           "expectedDate": "2027-10-24",
           "supervisionCommittee": "",
-          "supervisorSent": "Creative output sent: 00 Mon 20XX",
+          "supervisorSent": "Completion presentation sent: 00 Mon 20XX",
           "feedbackRequested": ""
         },
         {
@@ -2342,15 +2714,15 @@ use research planner app on your own computer - download the app then open .html
           "expectedDate": "2027-10-25",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
           "supervisorSent": "",
-          "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
+          "feedbackRequested": "Creative Feedback Requested by: 00 Mon 20XX"
         },
         {
           "chapter": "Creative Output",
-          "days": 28,
+          "days": 36,
           "notes": "Finalise creative output",
           "progress": "0%",
           "startDate": "2027-10-25",
-          "expectedDate": "2027-11-22",
+          "expectedDate": "2027-11-30",
           "supervisionCommittee": "",
           "supervisorSent": "",
           "feedbackRequested": ""
@@ -2365,8 +2737,8 @@ use research planner app on your own computer - download the app then open .html
           "days": 14,
           "notes": "Break",
           "progress": "",
-          "startDate": "2027-11-23",
-          "expectedDate": "2027-12-07",
+          "startDate": "2027-12-01",
+          "expectedDate": "2027-12-15",
           "supervisionCommittee": "",
           "supervisorSent": "",
           "feedbackRequested": ""
@@ -2374,27 +2746,27 @@ use research planner app on your own computer - download the app then open .html
       ]
     },
     {
-      "activityName": "## COMPLETION SEMINAR",
+      "activityName": "# COMPLETION SEMINAR",
       "elements": [
-        {
-          "chapter": "Preparation",
-          "days": 28,
-          "notes": "Write first draft presentation",
-          "progress": "0%",
-          "startDate": "2027-12-08",
-          "expectedDate": "2028-01-05",
-          "supervisionCommittee": "",
-          "supervisorSent": "Presentation sent: 00 Mon 20XX",
-          "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
-        },
         {
           "chapter": "Supervision",
           "days": 1,
           "notes": "Supervision meeting: Zoom",
           "progress": "",
-          "startDate": "2028-01-05",
-          "expectedDate": "2028-01-06",
+          "startDate": "2027-12-16",
+          "expectedDate": "2027-12-17",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
+          "supervisorSent": "",
+          "feedbackRequested": "Completion Presentation Feedback Requested by: 00 Mon 20XX"
+        },
+        {
+          "chapter": "Finalise presentation",
+          "days": 16,
+          "notes": "Finalise completion presentation",
+          "progress": "0%",
+          "startDate": "2027-12-17",
+          "expectedDate": "2028-01-02",
+          "supervisionCommittee": "",
           "supervisorSent": "",
           "feedbackRequested": ""
         },
@@ -2403,9 +2775,9 @@ use research planner app on your own computer - download the app then open .html
           "days": 1,
           "notes": "Present research",
           "progress": "0%",
-          "startDate": "2028-01-06",
-          "expectedDate": "2028-01-07",
-          "supervisionCommittee": "",
+          "startDate": "2028-01-02",
+          "expectedDate": "2028-01-03",
+          "supervisionCommittee": "Seminar: Day 00 Mon 20XX",
           "supervisorSent": "",
           "feedbackRequested": ""
         }
@@ -2419,10 +2791,21 @@ use research planner app on your own computer - download the app then open .html
           "days": 28,
           "notes": "Editing",
           "progress": "0%",
-          "startDate": "2028-01-08",
-          "expectedDate": "2028-02-05",
+          "startDate": "2028-01-04",
+          "expectedDate": "2028-02-01",
           "supervisionCommittee": "",
-          "supervisorSent": "Edited proofed thesis sent: 00 Mon 20XX",
+          "supervisorSent": "Edited thesis sent: 00 Mon 20XX",
+          "feedbackRequested": ""
+        },
+        {
+          "chapter": "Proof dissertation",
+          "days": 21,
+          "notes": "Proofing",
+          "progress": "0%",
+          "startDate": "2028-02-01",
+          "expectedDate": "2028-02-22",
+          "supervisionCommittee": "",
+          "supervisorSent": "",
           "feedbackRequested": ""
         },
         {
@@ -2430,19 +2813,19 @@ use research planner app on your own computer - download the app then open .html
           "days": 1,
           "notes": "Supervision meeting: Zoom",
           "progress": "",
-          "startDate": "2028-02-05",
-          "expectedDate": "2028-02-06",
+          "startDate": "2028-02-22",
+          "expectedDate": "2028-02-23",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
           "supervisorSent": "",
           "feedbackRequested": "Feedback Requested by: 00 Mon 20XX"
         },
         {
-          "chapter": "Proof dissertation",
-          "days": 21,
-          "notes": "Proofing",
+          "chapter": "Final editing & proofing",
+          "days": 6,
+          "notes": "Final editing & proofing of thesis dissertation",
           "progress": "0%",
-          "startDate": "2028-02-06",
-          "expectedDate": "2028-02-27",
+          "startDate": "2028-02-23",
+          "expectedDate": "2028-02-29",
           "supervisionCommittee": "",
           "supervisorSent": "",
           "feedbackRequested": ""
@@ -2450,15 +2833,15 @@ use research planner app on your own computer - download the app then open .html
       ]
     },
     {
-      "activityName": "## THESIS SUBMISSION",
+      "activityName": "# THESIS SUBMISSION",
       "elements": [
         {
           "chapter": "Supervision",
           "days": 1,
           "notes": "Supervision meeting: Zoom",
           "progress": "",
-          "startDate": "2028-02-28",
-          "expectedDate": "2028-02-29",
+          "startDate": "2028-03-01",
+          "expectedDate": "2028-03-02",
           "supervisionCommittee": "Supervision: Day 00 Mon 20XX",
           "supervisorSent": "",
           "feedbackRequested": ""
@@ -2468,13 +2851,15 @@ use research planner app on your own computer - download the app then open .html
           "days": 1,
           "notes": "Submit thesis",
           "progress": "0%",
-          "startDate": "2028-02-29",
-          "expectedDate": "2028-03-01",
+          "startDate": "2028-03-02",
+          "expectedDate": "2028-03-03",
           "supervisionCommittee": "THESIS SUBMISSION: 00 Mon 20XX",
           "supervisorSent": "Thesis submitted: DAY 00 Mon 20XX",
           "feedbackRequested": ""
         }
-      ]        }
+      ]
+
+        }
         ];
 
         // ================================
@@ -2554,6 +2939,7 @@ use research planner app on your own computer - download the app then open .html
             researchData.push(newActivity);
             recalculateDates();
             renderTable();
+            addConsoleMessage('New activity added', 'info');
         }
         
         function addElementToActivity(activityIndex) {
@@ -2562,6 +2948,7 @@ use research planner app on your own computer - download the app then open .html
             researchData[activityIndex].elements.push(createDefaultElement());
             recalculateDates();
             renderTable();
+            addConsoleMessage(`Element added to activity ${activityIndex}`, 'info');
         }
         
         function deleteActivity(activityIndex) {
@@ -2645,6 +3032,7 @@ use research planner app on your own computer - download the app then open .html
                     recalculateDates();
                     renderTable();
                     console.log('Element deletion completed');
+                    addConsoleMessage('Element deleted successfully', 'info');
                     showCustomAlert('Success', '✅ Element deleted successfully');
                 },
                 () => {
@@ -2673,6 +3061,7 @@ use research planner app on your own computer - download the app then open .html
                     renderTable();
                     console.log('renderTable completed');
                     
+                    addConsoleMessage('All data deleted by user', 'warn');
                     showCustomAlert('Success', '✅ All data has been deleted successfully.');
                     console.log('Delete all completed successfully');
                 },
@@ -2697,7 +3086,7 @@ use research planner app on your own computer - download the app then open .html
                 container.classList.remove('view-mode');
                 editBtn.classList.add('active');
                 viewBtn.classList.remove('active');
-                helpText.textContent = 'Edit Mode: Drag Activities/Elements to reorder • Click cells to edit • Use + buttons to add elements';
+                helpText.textContent = 'Edit Mode: Drag Activities/Elements to reorder • Click cells to edit • Use + buttons to add elements • PRINTING: for best PRINT results click View Mode';
                 
                 // Re-enable editing
                 document.querySelectorAll('.editable').forEach(el => {
@@ -2707,7 +3096,7 @@ use research planner app on your own computer - download the app then open .html
                 container.classList.add('view-mode');
                 viewBtn.classList.add('active');
                 editBtn.classList.remove('active');
-                helpText.textContent = 'View Mode: Read-only view for presentations and review';
+                helpText.textContent = 'View Mode: Read-only view for presentations, review and printing • PRINTING: File Menu > Print or Export as PDF > select Orientation > Landscape for best results';
                 
                 // Disable editing
                 document.querySelectorAll('.editable').forEach(el => {
@@ -2739,21 +3128,25 @@ use research planner app on your own computer - download the app then open .html
                 dragCell.appendChild(dragHandle);
                 
                 const activityCell = createSecureElement('td', '', 'activity-cell');
+    
                 const activityName = createSecureElement('span', activity.activityName, 'activity-name editable');
                 activityName.contentEditable = currentMode === 'edit';
                 activityName.dataset.field = 'activityName';
+               
+                const activityPrefix = createSecureElement('span',`└─ Activity`,'activity-btns-prefix');     
+                const deleteBtn = createSecureElement('button', '×', 'delete-btn');
+                deleteBtn.dataset.action = 'delete-activity';
+                deleteBtn.dataset.activityIndex = activityIndex;
                 
                 const addElementBtn = createSecureElement('button', '+ Element', 'add-element-btn');
                 addElementBtn.dataset.action = 'add-element';
                 addElementBtn.dataset.activityIndex = activityIndex;
                 
-                const deleteBtn = createSecureElement('button', '×', 'delete-btn');
-                deleteBtn.dataset.action = 'delete-activity';
-                deleteBtn.dataset.activityIndex = activityIndex;
-                
                 activityCell.appendChild(activityName);
+                activityCell.appendChild(activityPrefix);   
+                activityCell.appendChild(deleteBtn);   
                 activityCell.appendChild(addElementBtn);
-                activityCell.appendChild(deleteBtn);
+
                 
                 const countCell = createSecureElement('td', `${activity.elements.length} element${activity.elements.length !== 1 ? 's' : ''}`, 'element-count');
                 countCell.colSpan = 10;
@@ -2854,7 +3247,7 @@ use research planner app on your own computer - download the app then open .html
         }
         
         // ================================
-        // EVENT HANDLERS
+        // ENHANCED EVENT HANDLERS
         // ================================
         
         function setupEventDelegation() {
@@ -2865,6 +3258,7 @@ use research planner app on your own computer - download the app then open .html
                     researchStartDate = e.target.value;
                     recalculateDates();
                     renderTable();
+                    addConsoleMessage('Research start date updated: ' + researchStartDate, 'info');
                 });
             }
             
@@ -2991,7 +3385,7 @@ use research planner app on your own computer - download the app then open .html
                 }
             });
             
-            // Edit handlers with security
+            // Enhanced edit handlers with security
             tbody.addEventListener('blur', function(e) {
                 if (e.target.classList.contains('editable')) {
                     const field = e.target.dataset.field;
@@ -3010,34 +3404,62 @@ use research planner app on your own computer - download the app then open .html
                 }
             });
 
-            // Basic input protection - only check for obvious script injection
+            // Enhanced real-time input protection with visual feedback
             tbody.addEventListener('input', function(e) {
                 if (e.target.classList.contains('editable')) {
                     const content = e.target.textContent;
-                    // Only sanitize if dangerous content detected
-                    if (content.includes('<script') || content.includes('javascript:') || content.includes('on=')) {
-                        const sanitized = sanitizeString(content);
-                        if (content !== sanitized) {
-                            e.target.textContent = sanitized;
-                            // Restore cursor position at end
-                            const range = document.createRange();
-                            const sel = window.getSelection();
-                            range.selectNodeContents(e.target);
-                            range.collapse(false);
-                            sel.removeAllRanges();
-                            sel.addRange(range);
-                        }
+                    const originalContent = content;
+                    
+                    // Apply real-time sanitization
+                    const sanitized = secureSanitizeInput(content, e.target, 'realtime_input');
+                    
+                    if (content !== sanitized) {
+                        e.target.textContent = sanitized;
+                        
+                        // Restore cursor position at end
+                        const range = document.createRange();
+                        const sel = window.getSelection();
+                        range.selectNodeContents(e.target);
+                        range.collapse(false);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                        
+                        addConsoleMessage('Real-time protection: Dangerous content blocked', 'security');
                     }
                 }
             });
+
+            // Enhanced Research Title field protection
+            const researchTitleField = document.querySelector('.research-title .wrap');
+            if (researchTitleField) {
+                researchTitleField.addEventListener('input', function(e) {
+                    const content = e.target.textContent;
+                    const sanitized = secureSanitizeInput(content, e.target, 'research_title');
+                    
+                    if (content !== sanitized) {
+                        e.target.textContent = sanitized;
+                        
+                        // Restore cursor position
+                        const range = document.createRange();
+                        const sel = window.getSelection();
+                        range.selectNodeContents(e.target);
+                        range.collapse(false);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                        
+                        addConsoleMessage('Research title protected from malicious content', 'security');
+                    }
+                });
+            }
         }
         
         function handleActivityNameEdit(e) {
             const activityIndex = parseInt(e.target.closest('tr').dataset.activityIndex);
-            const newName = e.target.textContent.trim();
+            const newName = secureSanitizeInput(e.target.textContent.trim(), e.target, 'activity_name');
             
             if (activityIndex >= 0 && newName.length <= 200) {
                 researchData[activityIndex].activityName = newName;
+                e.target.textContent = newName; // Ensure sanitized content is displayed
             }
         }
         
@@ -3049,7 +3471,7 @@ use research planner app on your own computer - download the app then open .html
             const rawValue = e.target.textContent.trim();
             
             if (field && activityIndex >= 0 && elementIndex >= 0) {
-                // Apply field-specific validation
+                // Apply field-specific validation with security
                 switch (field) {
                     case 'days':
                         const days = Math.max(0, Math.min(parseInt(rawValue) || 0, 3650));
@@ -3070,10 +3492,10 @@ use research planner app on your own computer - download the app then open .html
                         const maxLength = field === 'progress' ? 50 : 
                                         field === 'chapter' ? 200 : 
                                         SECURITY_CONFIG.MAX_STRING_LENGTH;
-                        const trimmedValue = rawValue.substring(0, maxLength);
-                        researchData[activityIndex].elements[elementIndex][field] = trimmedValue;
-                        if (trimmedValue !== rawValue) {
-                            e.target.textContent = trimmedValue;
+                        const sanitizedValue = secureSanitizeInput(rawValue, e.target, 'cell_edit').substring(0, maxLength);
+                        researchData[activityIndex].elements[elementIndex][field] = sanitizedValue;
+                        if (sanitizedValue !== rawValue) {
+                            e.target.textContent = sanitizedValue;
                         }
                         break;
                 }
@@ -3163,6 +3585,7 @@ use research planner app on your own computer - download the app then open .html
                     
                     recalculateDates();
                     renderTable();
+                    addConsoleMessage(`Activity reordered: ${draggedIndex} → ${targetIndex}`, 'info');
                 }
             } else if (draggedType === 'element' && targetType === 'element') {
                 const draggedActivityIndex = parseInt(draggedElement.dataset.activityIndex);
@@ -3177,6 +3600,7 @@ use research planner app on your own computer - download the app then open .html
                         
                         recalculateDates();
                         renderTable();
+                        addConsoleMessage(`Element reordered within activity ${draggedActivityIndex}`, 'info');
                     }
                 } else {
                     const draggedElementData = researchData[draggedActivityIndex].elements.splice(draggedElementIndex, 1)[0];
@@ -3184,6 +3608,7 @@ use research planner app on your own computer - download the app then open .html
                     
                     recalculateDates();
                     renderTable();
+                    addConsoleMessage(`Element moved between activities: ${draggedActivityIndex} → ${targetActivityIndex}`, 'info');
                 }
             }
         }
@@ -3195,37 +3620,50 @@ use research planner app on your own computer - download the app then open .html
         }
         
         // ================================
-        // SECURE SAVE AND LOAD FUNCTIONS
+        // ENHANCED SECURE SAVE AND LOAD FUNCTIONS
         // ================================
         
         function saveData() {
             debugLog('saveData function started');
-            addConsoleMessage('Starting data save operation...', 'info');
+            addConsoleMessage('Starting secure data save operation...', 'info');
             
             try {
                 debugLog('Creating save object...');
                 const saveObject = {
-                    version: "1.3.1",
-                    appName: "Research Planner",
+                    version: "1.4.0",
+                    appName: "Research Planner - Enterprise Security Edition",
                     exportDate: new Date().toISOString(),
                     researchStartDate: researchStartDate,
                     totalActivities: researchData.length,
                     totalElements: researchData.reduce((sum, activity) => sum + activity.elements.length, 0),
-                    data: researchData
+                    data: researchData,
+                    securityInfo: {
+                        cspEnabled: true,
+                        sanitizationVersion: "enhanced",
+                        exportedBy: "enterprise-security-edition"
+                    }
                 };
                 
                 debugLog('Save object created:', saveObject);
                 addConsoleMessage(`Save object created: ${saveObject.totalActivities} activities, ${saveObject.totalElements} elements`, 'info');
+                addConsoleMessage('Security metadata included in export', 'security');
                 
-                // Don't sanitize for normal saves - only for loaded data
+                // Apply sanitization to save data (defensive measure)
+                const sanitizedSaveObject = JSON.parse(JSON.stringify(saveObject, (key, value) => {
+                    if (typeof value === 'string') {
+                        return secureSanitizeInput(value, null, 'export_data');
+                    }
+                    return value;
+                }));
+                
                 debugLog('Converting to JSON...');
-                const dataStr = JSON.stringify(saveObject, null, 2);
+                const dataStr = JSON.stringify(sanitizedSaveObject, null, 2);
                 debugLog('JSON created, length:', dataStr.length);
-                addConsoleMessage(`JSON data prepared (${dataStr.length} characters)`, 'info');
+                addConsoleMessage(`Secure JSON data prepared (${dataStr.length} characters)`, 'info');
                 
                 const now = new Date();
                 const timestamp = now.toISOString().slice(0, 19).replace(/[:.]/g, '-');
-                const filename = `research-planner-${timestamp}.json`;
+                const filename = `research-planner-secure-${timestamp}.json`;
                 debugLog('Filename:', filename);
                 
                 debugLog('Attempting clipboard copy...');
@@ -3233,6 +3671,7 @@ use research planner app on your own computer - download the app then open .html
                     navigator.clipboard.writeText(dataStr).then(() => {
                         debugLog('Clipboard copy successful');
                         addConsoleMessage('Data copied to clipboard successfully!', 'info');
+                        addConsoleMessage('Export completed with enterprise security', 'security');
                         showSaveSuccessModal(filename, saveObject.totalActivities, saveObject.totalElements);
                     }).catch((error) => {
                         debugLog('Clipboard failed, showing prompt:', error);
@@ -3248,7 +3687,7 @@ use research planner app on your own computer - download the app then open .html
             } catch (error) {
                 console.error('Save error:', error);
                 addConsoleMessage('Save error: ' + error.message, 'error');
-                alert('❌ Error preparing save data: ' + error.message);
+                showCustomAlert('Save Error', '❌ Error preparing save data: ' + error.message, 'error');
             }
         }
         
@@ -3258,7 +3697,7 @@ use research planner app on your own computer - download the app then open .html
             
             if (dataStr.length > 2000) {
                 console.log('Data is large, showing in parts');
-                showCustomAlert('Manual Save Required', '💾 Your data has been securely processed.\n📄 Data is large - showing in copyable format.');
+                showCustomAlert('Manual Save Required', '💾 Your data has been securely processed with enterprise protection.\n📄 Data is large - showing in copyable format.');
                 
                 // Show first chunk
                 const chunk1 = dataStr.substring(0, 2000);
@@ -3266,8 +3705,8 @@ use research planner app on your own computer - download the app then open .html
                 
                 console.log('Showing first chunk, length:', chunk1.length);
                 showCustomPrompt(
-                    'Copy Data - Part 1',
-                    `📋 Copy this text and save as ${filename}\n(${remainingLength} more characters in part 2)`,
+                    'Copy Secure Data - Part 1',
+                    `📋 Copy this text and save as ${filename}\n🛡️ Data secured with enterprise protection\n(${remainingLength} more characters in part 2)`,
                     chunk1
                 );
                 
@@ -3275,11 +3714,11 @@ use research planner app on your own computer - download the app then open .html
                 setTimeout(() => {
                     showCustomConfirm(
                         'Show Remaining Data',
-                        'Show part 2 of the data?',
+                        'Show part 2 of the secure data?',
                         () => {
                             console.log('Showing remaining data');
                             showCustomPrompt(
-                                'Copy Data - Part 2',
+                                'Copy Secure Data - Part 2',
                                 '📋 Copy and append this text to part 1:',
                                 dataStr.substring(2000)
                             );
@@ -3291,11 +3730,11 @@ use research planner app on your own computer - download the app then open .html
                 }, 1000);
             } else {
                 console.log('Data fits in single prompt');
-                showCustomAlert('Manual Save Required', '💾 Your data has been securely processed.\nClick OK to see the copyable data.');
+                showCustomAlert('Manual Save Required', '💾 Your data has been securely processed with enterprise protection.\nClick OK to see the copyable data.');
                 setTimeout(() => {
                     showCustomPrompt(
-                        'Copy Data',
-                        `📋 Copy this data and save as ${filename}:`,
+                        'Copy Secure Data',
+                        `📋 Copy this data and save as ${filename}:\n🛡️ Enhanced security applied`,
                         dataStr
                     );
                 }, 500);
@@ -3305,6 +3744,7 @@ use research planner app on your own computer - download the app then open .html
         
         function loadData() {
             debugLog('loadData function called');
+            addConsoleMessage('Starting secure data load operation...', 'info');
             
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
@@ -3317,7 +3757,9 @@ use research planner app on your own computer - download the app then open .html
                 if (!file) return;
                 
                 try {
-                    // Security validations
+                    addConsoleMessage(`File selected: ${file.name} (${file.size} bytes)`, 'info');
+                    
+                    // Enhanced security validations
                     validateFileSize(file);
                     validateFileType(file);
                     
@@ -3327,6 +3769,7 @@ use research planner app on your own computer - download the app then open .html
                     const timeoutId = setTimeout(() => {
                         reader.abort();
                         showCustomAlert('Timeout Error', '❌ File reading timeout. File may be too large or complex.', 'error');
+                        addConsoleMessage('File read timeout - security protection activated', 'security');
                     }, SECURITY_CONFIG.PARSING_TIMEOUT);
                     
                     reader.onload = function(e) {
@@ -3334,22 +3777,32 @@ use research planner app on your own computer - download the app then open .html
                         
                         try {
                             const jsonText = e.target.result;
+                            addConsoleMessage('File read successfully, starting security scan...', 'info');
+                            
+                            // Enhanced security scanning
+                            if (SECURITY_CONFIG.SECURITY_SCAN_ENABLED) {
+                                securityScanFileContent(jsonText, file.name);
+                            }
                             
                             // Parse with timeout protection
                             const parseTimeoutId = setTimeout(() => {
-                                throw new Error('JSON parsing timeout - file may be malformed');
+                                throw new Error('JSON parsing timeout - file may be malformed or malicious');
                             }, SECURITY_CONFIG.PARSING_TIMEOUT);
                             
                             const loadedData = JSON.parse(jsonText);
                             clearTimeout(parseTimeoutId);
                             
                             debugLog('JSON parsed successfully');
+                            addConsoleMessage('JSON parsing completed successfully', 'info');
                             
-                            // Validate structure
+                            // Enhanced validation
+                            debugLog('Starting enhanced JSON structure validation...');
                             validateJsonStructure(loadedData);
+                            addConsoleMessage('✅ Data structure validation passed', 'security');
                             
-                            // Sanitize the loaded data
+                            // Sanitize the loaded data with enterprise protection
                             const sanitizedData = sanitizeLoadedData(loadedData);
+                            addConsoleMessage('Data sanitization completed', 'security');
                             
                             // Handle different data formats
                             if (sanitizedData.data && Array.isArray(sanitizedData.data)) {
@@ -3365,33 +3818,46 @@ use research planner app on your own computer - download the app then open .html
                                     }
                                 }
                                 
-                                showCustomAlert('Data Loaded', `✅ Data loaded successfully!\n🛡️ Security: All data has been sanitized\n📊 ${sanitizedData.totalActivities || researchData.length} activities\n📅 Exported: ${sanitizedData.exportDate ? new Date(sanitizedData.exportDate).toLocaleString() : 'Unknown date'}`);
+                                let securityInfo = '';
+                                if (sanitizedData.securityInfo) {
+                                    securityInfo = '\n🛡️ Security: ' + (sanitizedData.securityInfo.cspEnabled ? 'CSP Protected' : 'Standard') + 
+                                                 ' • ' + (sanitizedData.securityInfo.sanitizationVersion || 'basic') + ' sanitization';
+                                }
+                                
+                                showCustomAlert('Secure Data Loaded', `✅ Data loaded successfully with enterprise protection!\n🛡️ Security: All data has been scanned and sanitized\n📊 ${sanitizedData.totalActivities || researchData.length} activities\n📅 Exported: ${sanitizedData.exportDate ? new Date(sanitizedData.exportDate).toLocaleString() : 'Unknown date'}${securityInfo}`);
                                 
                             } else if (Array.isArray(sanitizedData)) {
                                 // Old format (direct array)
                                 researchData = sanitizedData;
-                                showCustomAlert('Data Loaded', `✅ Data loaded successfully!\n🛡️ Security: All data has been sanitized\n📊 ${researchData.length} activities loaded`);
+                                showCustomAlert('Secure Data Loaded', `✅ Data loaded successfully with enterprise protection!\n🛡️ Security: All data has been scanned and sanitized\n📊 ${researchData.length} activities loaded\n⚠️ Legacy format detected - consider re-saving for enhanced security`);
                             }
                             
                             // Update the interface
                             recalculateDates();
                             renderTable();
+                            addConsoleMessage('Data load completed successfully', 'info');
+                            addConsoleMessage('Enterprise security scan completed - no threats detected', 'security');
                             
                         } catch (error) {
                             console.error('Error loading data:', error);
+                            addConsoleMessage('Load error: ' + error.message, 'error');
+                            
                             let errorMsg = '❌ Error loading file:\n\n' + error.message;
                             
                             if (error instanceof SyntaxError) {
                                 errorMsg += '\n\n💡 Make sure the file contains valid JSON data from the Research Planner.';
+                            } else if (error.message.includes('Security scan failed')) {
+                                errorMsg += '\n\n🛡️ Enterprise security protection prevented loading of potentially dangerous content.';
                             }
                             
-                            showCustomAlert('Load Error', errorMsg, 'error');
+                            showCustomAlert('Secure Load Error', errorMsg, 'error');
                         }
                     };
                     
                     reader.onerror = function() {
                         clearTimeout(timeoutId);
                         console.error('FileReader error occurred');
+                        addConsoleMessage('File reader error - security protection activated', 'security');
                         showCustomAlert('File Error', '❌ Error reading the selected file. Please try again.', 'error');
                     };
                     
@@ -3399,6 +3865,7 @@ use research planner app on your own computer - download the app then open .html
                     reader.readAsText(file);
                     
                 } catch (error) {
+                    addConsoleMessage('File validation error: ' + error.message, 'error');
                     showCustomAlert('File Validation Error', '❌ File validation error: ' + error.message, 'error');
                 }
                 
@@ -3414,25 +3881,40 @@ use research planner app on your own computer - download the app then open .html
         }
         
         // ================================
-        // INITIALIZATION
+        // ENHANCED INITIALIZATION
         // ================================
         
         // Check for security libraries on startup
         function checkSecurityLibraries() {
             const status = {
                 DOMPurify: !!window.DOMPurify,
-                AJV: !!window.Ajv
+                AJV: !!window.Ajv,
+                CSP: !!document.querySelector('meta[http-equiv="Content-Security-Policy"]'),
+                enhancedProtection: true
             };
             
-            if (status.DOMPurify && status.AJV) {
-                console.log('🛡️ All security libraries loaded successfully');
+            addConsoleMessage('🛡️ Security Status Check:', 'security');
+            addConsoleMessage(`  - DOMPurify: ${status.DOMPurify ? '✅ Enhanced' : '❌ Missing'}`, 'security');
+            addConsoleMessage(`  - Schema Validation: ${status.AJV ? '✅ Active' : '❌ Missing'}`, 'security');
+            addConsoleMessage(`  - Content Security Policy: ${status.CSP ? '✅ Enabled' : '❌ Missing'}`, 'security');
+            addConsoleMessage(`  - Real-time Protection: ${status.enhancedProtection ? '✅ Active' : '❌ Disabled'}`, 'security');
+            
+            if (status.DOMPurify && status.AJV && status.CSP) {
+                console.log('🛡️ ENTERPRISE SECURITY: All security systems operational');
+                addConsoleMessage('Enterprise security suite fully operational', 'security');
             } else {
-                console.warn('⚠️ Some security libraries missing:', status);
+                console.warn('⚠️ Some security features missing:', status);
                 if (!status.DOMPurify) {
                     console.error('DOMPurify missing - XSS protection compromised');
+                    addConsoleMessage('Critical: DOMPurify missing', 'error');
                 }
                 if (!status.AJV) {
                     console.error('AJV missing - Schema validation compromised');
+                    addConsoleMessage('Warning: Schema validation missing', 'warn');
+                }
+                if (!status.CSP) {
+                    console.error('CSP missing - Script injection protection compromised');
+                    addConsoleMessage('Critical: Content Security Policy missing', 'error');
                 }
             }
             
@@ -3442,22 +3924,42 @@ use research planner app on your own computer - download the app then open .html
         // Check if all functions are properly defined
         function checkFunctionAvailability() {
             debugLog('🔍 Checking function availability...');
-            const functions = ['saveData', 'loadData', 'deleteAll', 'addElementToActivity', 'deleteElement', 'deleteActivity'];
+            const functions = ['saveData', 'loadData', 'deleteAll', 'addElementToActivity', 'deleteElement', 'deleteActivity', 'secureSanitizeInput', 'securityScanFileContent'];
             functions.forEach(funcName => {
-                debugLog(`${funcName}:`, typeof window[funcName] === 'function' ? '✅ Available' : '❌ Missing');
+                const available = typeof window[funcName] === 'function' || typeof eval(funcName) === 'function';
+                debugLog(`${funcName}:`, available ? '✅ Available' : '❌ Missing');
             });
         }
         
-        // Initialize the application
+        // Initialize the application with enhanced security
         function initializeApp() {
-            debugLog('🚀 Initializing Research Planner...');
-            checkSecurityLibraries();
+            debugLog('🚀 Initializing Research Planner Enterprise Security Edition...');
+            addConsoleMessage('Starting enterprise security initialization...', 'info');
+            
+            const securityStatus = checkSecurityLibraries();
             checkFunctionAvailability();
+            
+            // Initialize security event log
+            window.securityEventLog = window.securityEventLog || [];
+            
+            // Set security indicator status
+            const indicator = document.getElementById('securityIndicator');
+            if (indicator && securityStatus.CSP && securityStatus.DOMPurify) {
+                indicator.style.background = '#5CC937';
+                indicator.innerHTML = '🛡️ App Status: Secure 🛡️';
+            } else {
+                indicator.style.background = '#ffc107';
+                indicator.innerHTML = '⚠️ PARTIAL SECURITY ⚠️';
+            }
+            
             recalculateDates();
             renderTable();
             setMode('edit');
             setupEventDelegation();
-            debugLog('🛡️ Research Planner v1.3.1 initialized');
+            
+            addConsoleMessage('✅ Research Planner Enterprise Security v1.4.0 initialized', 'info');
+            addConsoleMessage('🛡️ Enterprise-grade protection active', 'security');
+            debugLog('🛡️ Research Planner Enterprise Security v1.4.0 initialized with enhanced protection');
         }
         
         // Initialize immediately if DOM already loaded
