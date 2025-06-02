@@ -1,6 +1,6 @@
 # 📊 Research Planner
 
-**Enterprise-grade research project management tool with advanced security features**
+**Single-page HTML & Javascript research project management tool with advanced security features**
 
 A self-contained, single-file web application for planning and tracking academic research projects, dissertations, and thesis work. Built with security-first architecture and optimized for both digital use and professional printing.
 
@@ -10,19 +10,27 @@ A self-contained, single-file web application for planning and tracking academic
 
 ## ✨ Key Features
 
-### 📋 **Project Management**
+### 📋 **Research or Project Planning**
 - **Hierarchical Structure**: Activities contain multiple elements with detailed tracking
-- **Automatic Date Calculation**: Cascading date progression from your research start date
+- **Automatic Date Calculation**: Cascading date progression from your research start date (set your own with calendar date picker)
 - **Drag & Drop Reordering**: Intuitive activity and element reorganization
-- **Progress Tracking**: Visual progress indicators and completion status
-- **Supervisor Communication**: Color-coded columns for tracking supervisor interactions
+- **Progress Tracking**: Editable progress indicators to completion 100%
+- **Date Sent** Auto color-coded field to mark date chapter / docs sent to Supervisor / Committee etc.
+- **Feedback Requested Date** Auto color-coded field to mark date feedback requested on chapter / docs
+- **Supervision / Meetings Date**: Auto color-coded field to clearly mark out meetings with supervisors, committee, collaborators etc.
 
-### 🛡️ **Enterprise Security**
-- **Content Security Policy**: Browser-level protection against script injection
-- **Real-time Input Sanitization**: Live protection as you type
-- **File Upload Security**: Multi-layer validation and threat scanning
-- **Visual Security Feedback**: Immediate alerts when threats are blocked
-- **Debug Console**: Real-time security monitoring and event logging
+### 💾 **Data I/O and Offline Functionality**
+- **Secure Export/Import**: JSON format with security metadata
+- **Clipboard Integration**: One-click copy to clipboard for easy saving
+- **Data Persistence**: Automatic date recalculation on data load
+- **Version Tracking**: Built-in version control for exported files
+- **Backup-Friendly**: Self-contained files that work anywhere
+- **Work Offline**: Once app is downloaded, no internet connection is required as app runs locally on your file-system
+
+### 💾 **Pre-Built 3-Year Doctoral Research Template**
+- **PhD Template**: 3-Year template loaded by default - interviews/creative research based project
+- **Editable Template**: Drag, drop, extend, customise, reorganise, edit, delete, make it yours
+- **Delete All**: Use Delete All button to delete template and create your own 
 
 ### 🖨️ **Print Optimization**
 - **Professional Layout**: Optimized for landscape printing and PDF export
@@ -31,28 +39,31 @@ A self-contained, single-file web application for planning and tracking academic
 - **Automatic Scaling**: 65% zoom optimization for better page fitting
 - **Smart Element Hiding**: Print mode removes interactive elements automatically
 
-### 💾 **Data Management**
-- **Secure Export/Import**: JSON format with security metadata
-- **Clipboard Integration**: One-click copy to clipboard for easy saving
-- **Data Persistence**: Automatic date recalculation on data load
-- **Version Tracking**: Built-in version control for exported files
-- **Backup-Friendly**: Self-contained files that work anywhere
+### 🛡️ **Enterprise Security**
+- **Content Security Policy**: Browser-level protection against script injection
+- **Real-time Input Sanitization**: Live protection as you type
+- **File Upload Security**: Multi-layer validation and threat scanning
+- **Visual Security Feedback**: Immediate alerts when threats are blocked
+- **Debug Console**: Real-time security monitoring and event logging
+- **Host App Securely**: Host app on your university web-server to make it available for your researchers
 
 ## 🚀 Quick Start
 
 ### **Instant Setup**
-1. Download the `research-planner-1.4.0.html` file
-2. Open in any modern web browser
+1. Download the `index.html` file or click Download App and save .html file to desktop
+2. Open .html file in any modern web browser
 3. Start planning your research immediately
 4. No installation, no dependencies, no servers required
 
 ### **Basic Usage**
-1. **Set Research Start Date**: Use the date picker to set when your research begins
-2. **Add Activities**: Use the blue `+` button to create major research phases
-3. **Add Elements**: Use green `+ Element` buttons to break activities into tasks
-4. **Edit Content**: Click any cell to edit (days, notes, progress, etc.)
-5. **Track Progress**: Use the colored supervisor columns for communication tracking
-6. **Save Your Work**: Use `💾 Save Data` to export your plan
+1. **Use Template or Delete All**: Use existing template as the basis for your own project or Delete All to start fresh
+2. **Set Research Start Date**: Use the date picker to set when your research begins
+3. **Add Activities**: Use the blue `+` button to create major research phases
+4. **Add Elements**: Use green `+ Element` buttons to break activities into tasks
+5. **Edit Content**: Click any cell to edit (days, notes, progress, etc.)
+6. **Track Progress**: Use the colored supervisor columns for communication tracking
+7. **Save Your Work!**: Use `💾 Save Data` to export your plan (recommended: save regularly)
+8. **Print Research Plan**: Click View Mode button then navigate to browser menu > File > Print or Export to PDF then print in Landscape Orientation (for best layout: use Chrome)
 
 ## 📖 Detailed Features
 
@@ -67,12 +78,12 @@ A self-contained, single-file web application for planning and tracking academic
 Three color-coded columns for academic supervision:
 - **🔵 Supervision/Meeting** (Light Blue): Record meeting dates and outcomes
 - **🟡 Docs Sent** (Yellow): Track when documents are sent to supervisors  
-- **🟢 Feedback Requested** (Green): Monitor feedback requests and deadlines
+- **🟢 Feedback Requested** (Green): Monitor feedback requests to communicate clearly with your committee
 
 ### **Modes & Views**
 - **Edit Mode**: Full functionality with drag-and-drop, editing, and controls
 - **View Mode**: Read-only presentation mode, optimized for printing and sharing
-- **Print Mode**: Automatic activation during printing with optimized layout
+- **Print Mode**: Automatic activation during printing with optimized layout (choose View Mode first)
 
 ### **Data Export/Import**
 ```json
@@ -118,7 +129,7 @@ Three color-coded columns for academic supervision:
 - **Chrome/Edge**: Full support (recommended)
 - **Firefox**: Full support  
 - **Safari**: Full support
-- **Mobile**: Responsive design, works on tablets and phones
+- **Mobile**: Responsive design, works on tablets (phone likely too small)
 
 ### **File Specifications**
 - **Input**: JSON files up to 10MB
