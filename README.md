@@ -200,17 +200,20 @@ Access detailed diagnostics via the `📊 Console` button:
 - Performance metrics
 - Error debugging information
 
-## 🤝 Contributing
+## 🤝 Contributing and Future Development Roadmap
 
 We welcome contributions! Areas for enhancement:
+
+- **Themes**: Alternative color schemes, layouts and dark/light mode
 - **Templates**: Pre-built research plan templates
+  - Export your .json file and either make a Pull Request on Github or just send it to us here https://annahelme.com/contact/ 
+- **Editable Column Headers**: To more easily use for multiple project-management purposes
 - **Export Formats**: Additional export options (CSV, Excel)
-- **Themes**: Alternative color schemes and layouts
 - **Integrations**: Calendar and project management tool connections
 
 ## 📄 License
 
-MIT License - Feel free to use, modify, and distribute for any purpose.
+MIT License - Feel free to use, fork, modify, and distribute for any purpose.
 
 ## 👥 Authors
 
